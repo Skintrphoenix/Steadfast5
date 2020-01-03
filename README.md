@@ -1,7 +1,6 @@
   <img src="https://github.com/IceCruelStuff/Steadfast5/blob/master/Steadfast5.png" alt="Steadfast5 logo" title="Aimeos" align="center" />
 
 # Steadfast5 Minecraft: Bedrock Edition Server Software
-# This repository will still be updated, but please consider using the [new repository](https://github.com/Steadfast5/Steadfast5).
 # Links
 | Jenkins | TravisCI | Discord |
 | :---: | :---: | :---: |
