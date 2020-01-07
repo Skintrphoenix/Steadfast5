@@ -11,7 +11,7 @@ Visit the other repository [here](https://github.com/Steadfast5/Steadfast5).
 
 ## Introduction
 
-Steadfast5 is a project for backporting new Minecraft: Bedrock Edition changes to older Pocketmine versions for better stability and performance, while retaining as many features from the new PocketMine-MP versions as possible.
+Steadfast5 is a project for backporting new Minecraft: Bedrock Edition changes to older PocketMine-MP versions for better stability and performance, while retaining as many features from the new PocketMine-MP versions as possible.
 
 ## Todo-List
 
