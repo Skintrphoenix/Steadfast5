@@ -2,7 +2,7 @@
 
 # Steadfast5 Minecraft: Bedrock Edition Server Software
 
-Visit the other repository [here](https://github.com/Steadfast5/Steadfast5).
+Click [here](https://github.com/Steadfast5/Steadfast5) to view other repository.
 
 # Links
 | Jenkins | TravisCI | Discord |
