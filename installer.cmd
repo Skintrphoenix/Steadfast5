@@ -27,13 +27,13 @@ mkdir Steadfast5
 
 cd Steadfast5
 
-curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
-| grep "https://github.com/IceCruelStuff/Steadfast5/releases/download/v1.2/Steadfast5.phar.*deb" \
+curl -s https://api.github.com/repos/IceCruelStuff/Steadfast5/releases/latest \
+| grep "https://github.com/IceCruelStuff/Steadfast5/releases/latest/download/Steadfast5.phar.*deb" \
 | cut -d : -f 2,3 \
 | tr -d \" \
 | wget -qi -
 
-curl -s https://api.github.com/repos/jgm/pandoc/releases/latest \
+curl -s https://api.github.com/repos/IceCruelStuff/Steadfast5/releases/latest \
 | grep "https://github.com/IceCruelStuff/Steadfast5/releases/download/v1.1/start.cmd.*deb" \
 | cut -d : -f 2,3 \
 | tr -d \" \
