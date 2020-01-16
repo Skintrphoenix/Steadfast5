@@ -30,7 +30,7 @@ Steadfast5 is a project for backporting new Minecraft: Bedrock Edition changes t
 ### Installing on Windows
 To install on Windows, please follow these instructions. 
 1) Open Powershell and type in `git clone --recursive https://github.com/IceCruelStuff/Steadfast5.git` 
-2) Run the `start.cmd` file located in your server folder. It will automatically download PHP. If you are running on Windows 7, download the zip file from Github and extract it, then run `start.cmd`. 
+2) Run the `start.cmd` file located in your server folder. It will automatically download PHP. If you are running on Windows 8 and below, download the zip file from Github and extract it, then run `start.cmd`. 
 3) After running `start.cmd`, you have to complete setup wizard. When you are finished all these steps, the server should start up.
 
 ### Installing on Linux/MacOS
@@ -39,5 +39,5 @@ To install on Linux/MacOS, please follow these instructions.
 2) Run command `./installer.sh`. If successful, this will create a `bin` folder with a special PHP build in it. After, run command `./start.sh` and the server should start up.
 
 ### Windows Installer
-If you don't know how to do any of the steps above, then download the [`source_installer.cmd`](https://github.com/IceCruelStuff/Steadfast5/releases/download/v1.1/source_installer.cmd) from the releases and run it. You can view the script on [GitHub Gist](https://gist.github.com/IceCruelStuff/621339e30c8fb2b0d4d806265f0bbed9).
+This is only for Windows 10. If you don't know how to do any of the steps above, then download the [`source_installer.cmd`](https://github.com/IceCruelStuff/Steadfast5/releases/download/v1.1/source_installer.cmd) from the releases and run it. You can view the script on [GitHub Gist](https://gist.github.com/IceCruelStuff/621339e30c8fb2b0d4d806265f0bbed9).
 This is only the Steadfast5 source installer. Click [here](https://github.com/IceCruelStuff/Steadfast5/releases/download/v1.1/installer.cmd) to download the [`installer.cmd`](https://gist.github.com/IceCruelStuff/f52d1071c1d93b707ead302f96c9f248).
