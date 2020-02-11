@@ -2,7 +2,7 @@
 
 # Steadfast5 Minecraft: Bedrock Edition Server Software
 
-Click [here](https://github.com/Steadfast5/Steadfast5) to view other repository.
+Click [here](https://github.com/IceCruelStuff/Steadfast5) to view other repository.
 
 [![HitCount](http://hits.dwyl.com/Steadfast5/Steadfast5.svg)](http://hits.dwyl.com/Steadfast5/Steadfast5) [![License](https://img.shields.io/badge/license-LGNU%20v3-blue.svg?style=flat-square)](https://github.com/Steadfast5/Steadfast5/blob/master/LICENSE) [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=plastic)]()
 
