@@ -132,7 +132,7 @@ class FishingHook extends Entity {
 		}
 	}
 
-	public function onUpdate($currentTick) {
+	/*public function onUpdate($currentTick) {
 		if ($this->closed !== false) {
 			return false;
 		}
@@ -158,7 +158,7 @@ class FishingHook extends Entity {
 			}
 		}
 		return $hasUpdate || $this->motionX != 0 || $this->motionY != 0 || $this->motionZ != 0;
-	}
+	}*/
 
 	public function move($dx, $dy, $dz) {
 		if ($dx == 0 && $dz == 0 && $dy == 0) {

@@ -234,7 +234,9 @@ interface ItemIds {
     const INVERTED_DAYLIGHT_SENSOR = 178;
     const RED_SANDSTONE = 179;
     const RED_SANDSTONE_STAIRS = 180;
+    const DOUBLE_STONE_SLAB2 = 181;
     const DOUBLE_RED_SANDSTONE_SLAB = 181;
+    const STONE_SLAB2 = 182;
     const RED_SANDSTONE_SLAB = 182;
     const FENCE_GATE_SPRUCE = 183;
     const FENCE_GATE_BIRCH = 184;
@@ -252,6 +254,8 @@ interface ItemIds {
     const PURPUR_BLOCK = 201;
     const END_BRICKS = 206;
     const END_ROD = 208;
+    const MAGMA = 213;
+    const NETHER_WART_BLOCK_BLOCK = 214;
     const RED_NETHER_BRICK = 215;
     const BONE_BLOCK = 216;
     const SHULKER_BOX = 218;
@@ -262,7 +266,9 @@ interface ItemIds {
     const STONECUTTER = 245;
     const GLOWING_OBSIDIAN = 246;
     const NETHER_REACTOR = 247;
+
     //Normal Item IDs
+
     const IRON_SHOVEL = 256; //
     const IRON_PICKAXE = 257; //
     const IRON_AXE = 258; //
