@@ -431,6 +431,8 @@ class Item Implements ItemIds {
     public static function init(){
         if(self::$list === null){
             self::$list = new \SplFixedArray(65536);
+            self::$list[self::GOLDEN_APPLE] = GoldenApple::class;
+            self::$list[self::ENCHANTED_GOLDEN_APPLE] = EnchantedGoldenApple::class;
             self::$list[self::SUGARCANE] = Sugarcane::class;
             self::$list[self::WHEAT_SEEDS] = WheatSeeds::class;
             self::$list[self::PUMPKIN_SEEDS] = PumpkinSeeds::class;
@@ -442,6 +444,9 @@ class Item Implements ItemIds {
             self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;
             self::$list[self::SIGN] = Sign::class;
             self::$list[self::WOODEN_DOOR] = WoodenDoor::class;
+            self::$list[self::MINECART] = Minecart::class;
+            self::$list[self::BOAT] = Boat::class;
+            self::$list[self::FISHING_ROD] = FishingRod::class;
             self::$list[self::BUCKET] = Bucket::class;
             self::$list[self::IRON_DOOR] = IronDoor::class;
             self::$list[self::CAKE] = Cake::class;
@@ -458,6 +463,7 @@ class Item Implements ItemIds {
             self::$list[self::FEATHER] = Feather::class;
             self::$list[self::BRICK] = Brick::class;
             self::$list[self::LEATHER_CAP] = LeatherCap::class;
+            self::$list[self::ITEM_FRAME] = ItemFrame::class;
             self::$list[self::LEATHER_TUNIC] = LeatherTunic::class;
             self::$list[self::LEATHER_PANTS] = LeatherPants::class;
             self::$list[self::LEATHER_BOOTS] = LeatherBoots::class;
@@ -515,6 +521,7 @@ class Item Implements ItemIds {
             self::$list[self::ELYTRA] = Elytra::class;
             self::$list[self::PRISMARINE_CRYSTAL] = PrismarineCrystal::class;
             self::$list[self::POTION] = Potion::class;
+            self::$list[self::REDSTONE_REPEATER] = Repeater::class;
             self::$list[self::BOTTLE_ENCHANTING] = BottleOEnchanting::class;
             self::$list[self::WRITABLE_BOOK] = WritableBook::class;
             
@@ -528,6 +535,7 @@ class Item Implements ItemIds {
             
             // update for 1.0
             self::$list[self::CHORUS_FRUIT] = ChorusFruit::class;
+            self::$list[self::REDSTONE_DUST] = Redstone::class;
             self::$list[self::TOTEM_OF_UNDYING] = TotemOfUndying::class;
 
             // for($i = 0; $i < 256; ++$i){
