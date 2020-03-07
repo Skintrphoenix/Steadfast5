@@ -40,7 +40,6 @@ class RedstoneOre extends Solid {
 	public function getHardness() {
 		return 3;
 	}
-
 	public function onUpdate($type, $deep) {
 		if (!Block::onUpdate($type, $deep)) {
 			return false;
