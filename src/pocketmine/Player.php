@@ -3548,11 +3548,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			foreach(Item::getCreativeItems() as $item){
 				$slots[] = clone $item['item'];
 			}
+			$pk = new InventoryContentPacket();
+			$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
+			$pk->items = $slots;
+			$this->dataPacket($pk);
 		}
-		$pk = new InventoryContentPacket();
-		$pk->inventoryID = Protocol120::CONTAINER_ID_CREATIVE;
-		$pk->items = $slots;
-		$this->dataPacket($pk);
 
 		$this->server->sendRecipeList($this);
 
