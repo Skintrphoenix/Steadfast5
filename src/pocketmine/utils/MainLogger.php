@@ -45,6 +45,9 @@ class MainLogger extends \AttachableThreadedLogger{
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		static::$logger = $this;
+		touch($logFile);
+		$this->logFile = $logFile;
+		$this->logDebug = (bool) $logDebug;
 		$this->logStream = new \Threaded;
 		$this->start();
 	}
@@ -127,7 +130,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		];
 		if($errno === 0){
 			$type = LogLevel::CRITICAL;
-		}else{
+		} else {
 			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
 		}
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
@@ -180,9 +183,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
 			$threadName = "Server thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
+		} elseif($thread instanceof Thread or $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
-		}else{
+		} else {
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
@@ -191,7 +194,7 @@ class MainLogger extends \AttachableThreadedLogger{
 
 		if(!Terminal::hasFormattingCodes()){
 			echo $cleanMessage . PHP_EOL;
-		}else{
+		} else {
 			echo $message . PHP_EOL;
 		}
 
@@ -209,5 +212,27 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	public function run(){
 		$this->shutdown = false;
+		$this->logResource = fopen($this->logFile, "a+b");
+		if(!is_resource($this->logResource)){
+			throw new \RuntimeException("Couldn't open log file");
+		}
+		
+		while($this->shutdown === false){
+			$this->synchronized(function(){
+				while($this->logStream->count() > 0){
+					$chunk = $this->logStream->shift();
+					fwrite($this->logResource, $chunk);
+				}
+				$this->wait(25000);
+			});
+		}
+		
+		if($this->logStream->count() > 0){
+			while($this->logStream->count() > 0){
+				$chunk = $this->logStream->shift();
+				fwrite($this->logResource, $chunk);
+			}
+		}
+		fclose($this->logResource);
 	}
 }
