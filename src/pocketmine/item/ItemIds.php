@@ -178,6 +178,7 @@ interface ItemIds {
     const BIRCH_WOODEN_STAIRS = 135;
     const JUNGLE_WOOD_STAIRS = 136;
     const JUNGLE_WOODEN_STAIRS = 136;
+    const COMMAND_BLOCK = 137;
     const BEACON = 138;
     const COBBLE_WALL = 139;
     const STONE_WALL = 139;
@@ -234,15 +235,17 @@ interface ItemIds {
     const INVERTED_DAYLIGHT_SENSOR = 178;
     const RED_SANDSTONE = 179;
     const RED_SANDSTONE_STAIRS = 180;
-    const DOUBLE_STONE_SLAB2 = 181;
+	const DOUBLE_STONE_SLAB2 = 181;
     const DOUBLE_RED_SANDSTONE_SLAB = 181;
-    const STONE_SLAB2 = 182;
+	const STONE_SLAB2 = 182;
     const RED_SANDSTONE_SLAB = 182;
     const FENCE_GATE_SPRUCE = 183;
     const FENCE_GATE_BIRCH = 184;
     const FENCE_GATE_JUNGLE = 185;
     const FENCE_GATE_DARK_OAK = 186;
     const FENCE_GATE_ACACIA = 187;
+    const REPEATING_COMMAND_BLOCK = 188;
+    const CHAIN_COMMAND_BLOCK = 189;
     const SPRUCE_DOOR_BLOCK = 193;
     const BIRCH_DOOR_BLOCK = 194;
     const JUNGLE_DOOR_BLOCK = 195;
@@ -254,7 +257,7 @@ interface ItemIds {
     const PURPUR_BLOCK = 201;
     const END_BRICKS = 206;
     const END_ROD = 208;
-    const MAGMA = 213;
+	const MAGMA = 213;
 	const NETHER_WART_BLOCK_BLOCK = 214;
     const RED_NETHER_BRICK = 215;
     const BONE_BLOCK = 216;
@@ -388,7 +391,7 @@ interface ItemIds {
     const RAW_CHICKEN = 365;
     const COOKED_CHICKEN = 366;
     const ROTTEN_FLESH = 367;
-    const ENDER_PERL = 368;
+    const ENDER_PEARL = 368;
     const BLAZE_ROD = 369;
     const GHAST_TEAR = 370;
     const GOLD_NUGGET = 371;
