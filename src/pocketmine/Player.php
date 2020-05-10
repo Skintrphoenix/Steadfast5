@@ -199,7 +199,7 @@ use function random_int;
  */
 class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 
-	use PlayerSettingsTrait;
+    use PlayerSettingsTrait;
 
     const OS_ANDROID = 1;
     const OS_IOS = 2;
@@ -213,6 +213,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
     const OS_TVOS = 10;
     const OS_ORBIS = 11;
     const OS_NX = 12;
+    const OS_XBOX = 13;
+    const OS_WINDOWS_PHONE = 14;
     const OS_UNKNOWN = -1;
 
     const INVENTORY_CLASSIC = 0;
@@ -385,7 +387,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	protected $lastShowModalTick = 0;
 
 	/** @var int */
-   protected $formIdCounter = 0;
+    protected $formIdCounter = 0;
 	/** @var Form[] */
 	protected $forms = [];
 
@@ -1014,6 +1016,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$pk->status = PlayStatusPacket::PLAYER_SPAWN;
 			$this->dataPacket($pk);
 
+			$this->setImmobile(false);
 			$this->noDamageTicks = 60;
 			$this->spawned = true;
 			$chunkX = $chunkZ = null;
@@ -2340,7 +2343,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 				}
 				$this->craftingType = self::CRAFTING_DEFAULT;
 				$this->currentTransaction = null;
-				// @todo добавить обычный инвентарь и броню
+				// TODO: add regular inventory and armor
 				if ($packet->windowid === $this->currentWindowId && $this->currentWindow != null) {
 					$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->currentWindow, $this));
 					$this->removeWindow($this->currentWindow);
@@ -3114,10 +3117,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		}
 
 //		if($this->getFood()-$amount <= 6 && !($this->getFood() <= 6)) {
-////			$this->setDataProperty(self::DATA_FLAG_SPRINTING, self::DATA_TYPE_BYTE, false);
+//			$this->setDataProperty(self::DATA_FLAG_SPRINTING, self::DATA_TYPE_BYTE, false);
 //			$this->removeEffect(Effect::SLOWNESS);
 //		} elseif($this->getFood()-$amount < 6 && !($this->getFood() > 6)) {
-////			$this->setDataProperty(self::DATA_FLAG_SPRINTING, self::DATA_TYPE_BYTE, true);
+//			$this->setDataProperty(self::DATA_FLAG_SPRINTING, self::DATA_TYPE_BYTE, true);
 //			$effect = Effect::getEffect(Effect::SLOWNESS);
 //			$effect->setDuration(0x7fffffff);
 //			$effect->setAmplifier(2);
@@ -3555,6 +3558,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		if($this->getHealth() <= 0){
 			$this->dead = true;
 		}
+
+		$this->setImmobile();
 
 		$this->server->getLogger()->info(TextFormat::AQUA . $this->username . TextFormat::WHITE . "/" . TextFormat::AQUA . $this->ip . " connected");
 
