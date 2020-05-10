@@ -49,7 +49,11 @@ class GlowingRedstoneOre extends Solid{
 		return 9;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate($type, $deep){
+		if (!Block::onUpdate($type, $deep)) {
+			return false;
+		}
+		$deep++;
 		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){
 			$this->getLevel()->setBlock($this, Block::get(Item::REDSTONE_ORE, $this->meta), false, false);
 

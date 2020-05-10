@@ -656,3 +656,4 @@ class PlayerInventory extends BaseInventory{
 	}
 
 }
+

@@ -72,11 +72,11 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
-	const VERSION = '1.5.1-hybrid';
-	const API_VERSION = "1.12.0";
-	const CODENAME = "刀 (Katana)";
+	const VERSION = '1.1.5';
+	const API_VERSION = "3.0.0";
+	const CODENAME = "ELITE";
 	const MINECRAFT_VERSION = "v1.x";
-	const MINECRAFT_VERSION_NETWORK = "1.2";
+	const MINECRAFT_VERSION_NETWORK = "1.12.1";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
@@ -91,8 +91,8 @@ namespace pocketmine {
 		@define("pocketmine\\PATH", getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	if(version_compare("7.0", PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= 7.0" . PHP_EOL;
+	if(version_compare("7.2", PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= 7.2" . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -128,6 +128,8 @@ namespace pocketmine {
 	
 	ini_set("memory_limit", -1);
 	define("pocketmine\\START_TIME", microtime(true));
+
+    define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
 
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
@@ -452,7 +454,7 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged PocketMine-Steadfast installation detected, do not use on production.");
+		$logger->warning("Non-packaged Steadfast3 installation detected, do not use on production.");
 	}
 
 	ThreadManager::init();

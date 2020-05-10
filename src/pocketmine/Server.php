@@ -46,6 +46,9 @@ use pocketmine\entity\Snowball;
 use pocketmine\entity\Egg;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
+use pocketmine\entity\Minecart;
+use pocketmine\entity\Boat;
+use pocketmine\entity\FishingHook;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -80,6 +83,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\Network;
 use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\CraftingDataPacket;
@@ -102,13 +106,17 @@ use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Bed;
 use pocketmine\tile\Cauldron;
 use pocketmine\tile\Chest;
+use pocketmine\tile\Dispenser;
+use pocketmine\tile\Dropper;
+use pocketmine\tile\Hopper;
 use pocketmine\tile\EnchantTable;
 use pocketmine\tile\EnderChest;
+use pocketmine\tile\FlowerPot;
 use pocketmine\tile\Furnace;
+use pocketmine\tile\PistonArm;
 use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Skull;
-use pocketmine\tile\FlowerPot;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Cache;
@@ -167,6 +175,9 @@ class Server{
 	/** @var BanList */
 	private $banByName = null;
 
+	/** @var \Threaded */
+	private static $sleeper = null;
+
 	/** @var BanList */
 	private $banByIP = null;
 
@@ -217,15 +228,15 @@ class Server{
 
 	/** @var bool */
 	private $autoSave;
+
+	/** @var RCON */
+	private $rcon;
 	
 	/** @var bool */
 	private $autoGenerate;
 	
 	/** @var bool */
 	private $savePlayerData;
-
-	/** @var RCON */
-	private $rcon;
 
 	/** @var EntityMetadataStore */
 	private $entityMetadata;
@@ -279,7 +290,6 @@ class Server{
 	private $useMonster ;
 	private $monsterLimit;
 		
-
 	public $packetMaker = null;
 	
 	private $jsonCommands = [];
@@ -325,7 +335,7 @@ class Server{
 	 * @return string
 	 */
 	public function getName(){
-		return "PocketMine-Steadfast";
+		return "Steadfast3";
 	}
 
 	/**
@@ -913,6 +923,12 @@ class Server{
 		return $found;
 	}
 
+	public static function microSleep(int $microseconds){
+		Server::$sleeper->synchronized(function(int $ms){
+			Server::$sleeper->wait($ms);
+		}, $microseconds);
+	}
+
 	/**
 	 * @param string $name
 	 *
@@ -1225,22 +1241,22 @@ class Server{
 	 * @return mixed
 	 */
 	public function getAdvancedProperty($variable, $defaultValue = null){
-			$vars = explode(".", $variable);
-			$base = array_shift($vars);
-			if($this->softConfig->exists($base)){
-					$base = $this->softConfig->get($base);
-				}else{
-					return $defaultValue;
-		}
+	    $vars = explode(".", $variable);
+	    $base = array_shift($vars);
+	    if($this->softConfig->exists($base)){
+	        $base = $this->softConfig->get($base);
+	    }else{
+	        return $defaultValue;
+	    }
 
-		while(count($vars) > 0){
-					$baseKey = array_shift($vars);
-					if(is_array($base) and isset($base[$baseKey])){
-							$base = $base[$baseKey];
-						}else{
-							return $defaultValue;
-			}
-		}
+	    while(count($vars) > 0){
+	        $baseKey = array_shift($vars);
+	        if(is_array($base) and isset($base[$baseKey])){
+	            $base = $base[$baseKey];
+	        }else{
+	            return $defaultValue;
+	        }
+	    }
 
 		return $base;
 	}
@@ -1473,6 +1489,7 @@ class Server{
 		self::$serverId =  mt_rand(0, PHP_INT_MAX);
 
 		$this->autoloader = $autoloader;
+		self::$sleeper = new \Threaded;
 		$this->logger = $logger;
 		$this->filePath = $filePath;
 		if(!file_exists($dataPath . "worlds/")){
@@ -1511,7 +1528,7 @@ class Server{
 
 		$this->logger->info("Loading server properties...");
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
-			"motd" => "Minecraft: PE Server",
+			"motd" => "A Steadfast3 Minecraft PE server",
 			"server-port" => 19132,
 			"memory-limit" => "256M",
 			"white-list" => false,
@@ -1535,8 +1552,8 @@ class Server{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(@Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
-			"auto-generate" => false,
-			"save-player-data" => false,
+			"auto-generate" => true,
+			"save-player-data" => true,
 			"time-update" => true,
 			"use-encrypt" => false
 		]);
@@ -1567,12 +1584,12 @@ class Server{
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
-		$this->setAutoGenerate($this->getConfigBoolean("auto-generate", false));
-		$this->setSavePlayerData($this->getConfigBoolean("save-player-data", false));
+		$this->setAutoGenerate($this->getConfigBoolean("auto-generate", true));
+		$this->setSavePlayerData($this->getConfigBoolean("save-player-data", true));
 		
-		$this->useAnimal = $this->getConfigBoolean("spawn-animals", false);
+		$this->useAnimal = $this->getConfigBoolean("spawn-animals", true);
 		$this->animalLimit = $this->getConfigInt("animals-limit", 0);
-		$this->useMonster = $this->getConfigBoolean("spawn-mobs", false);
+		$this->useMonster = $this->getConfigBoolean("spawn-mobs", true);
 		$this->monsterLimit = $this->getConfigInt("mobs-limit", 0);
 		$this->isUseEncrypt = $this->getConfigBoolean("use-encrypt", false);
 
@@ -1610,7 +1627,7 @@ class Server{
 	
 		$this->addInterface($this->mainInterface = new RakLibInterface($this));
 
-		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ? TextFormat::YELLOW : "") . $version->get(true) . TextFormat::WHITE . " \"" . $this->getCodename() . "\" (API " . $this->getApiVersion() . ")");
+		$this->logger->info("This server is running " . $this->getName() . " version " . ($version->isDev() ?  : "") . $version->get(true) . " \"" . $this->getCodename() . "\" API: " . $this->getApiVersion() . "");
 		$this->logger->info($this->getName() . " is distributed under the LGPL License");
 
 		PluginManager::$pluginParentTimer = new TimingsHandler("** Plugins");
@@ -1894,6 +1911,48 @@ class Server{
 			}
 		}
 	}
+
+    /**
+     * Broadcasts a list of packets in a batch to a list of players
+     *
+     * @param Player[]     $players
+     * @param DataPacket[] $packets
+     * @param bool         $forceSync
+     * @param bool         $immediate
+     */
+    public function batchPacket(array $players, array $packets, bool $immediate = false){
+        if(empty($packets)){
+            throw new \InvalidArgumentException("Cannot send empty batch");
+        }
+
+        Timings::$playerNetworkTimer->startTiming();
+        $targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
+
+        if(!empty($targets)){
+            $pk = new BatchPacket();
+            foreach($packets as $p){
+                $pk->addPacket($p);
+            }
+
+            if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+                $pk->setCompressionLevel($this->networkCompressionLevel);
+            }else{
+                $pk->setCompressionLevel(0); //Do not compress packets under the threshold
+            }
+
+            $this->broadcastPacketsCallback($pk, $targets, $immediate);
+        }
+        Timings::$playerNetworkTimer->stopTiming();
+    }
+    /**
+     * @param BatchPacket $pk
+     * @param Player[]    $players
+     */
+    public function broadcastPacketsCallback(BatchPacket $pk, array $players){
+        foreach ($players as $i) {
+            $i->dataPacket($pk);
+        }
+    }
 
 	/**
 	 * @param int $type
@@ -2448,6 +2507,9 @@ class Server{
 	
 		//Timings::$connectionTimer->startTiming();
 		$this->network->processInterfaces();
+		if($this->rcon !== null){
+			$this->rcon->check();
+		}
 		//Timings::$connectionTimer->stopTiming();
 
 		//Timings::$schedulerTimer->startTiming();
@@ -2508,6 +2570,9 @@ class Server{
 	}
 
 	private function registerEntities(){
+		Entity::registerEntity(Minecart::class);
+		Entity::registerEntity(Boat::class);
+		Entity::registerEntity(FishingHook::class);
 		Entity::registerEntity(Arrow::class);
 		Entity::registerEntity(SplashPotion::class);
 		Entity::registerEntity(DroppedItem::class);
@@ -2557,7 +2622,11 @@ class Server{
         Tile::registerTile(EnderChest::class);
 		Tile::registerTile(Bed::class);
 		Tile::registerTile(Cauldron::class);
+		Tile::registerTile(Dispenser::class);
+		Tile::registerTile(PistonArm::class);
 		Tile::registerTile(ItemFrame::class);
+		Tile::registerTile(Dropper::class);
+		Tile::registerTile(Hopper::class);
 		Tile::registerTile(Beacon::class);
 		Tile::registerTile(Banner::class);
 	}

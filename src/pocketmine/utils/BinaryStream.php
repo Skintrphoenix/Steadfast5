@@ -5,11 +5,15 @@ namespace pocketmine\utils;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\network\protocol\Info;
+use function chr;
+use function ord;
+use function strlen;
+use function substr;
 
 class BinaryStream {
-	
-	private $offset;
-	private $buffer;
+
+    private $offset = 0;
+    public $buffer = "";
 
 	private function writeErrorLog($depth = 3) {
 		$depth = max($depth, 3);
@@ -48,8 +52,14 @@ class BinaryStream {
 	}
 
 	public function reset() {
-		$this->setBuffer();
-	}
+        $this->buffer = "";
+        $this->offset = 0;
+    }
+
+    public function rewind()
+    {
+        $this->offset = 0;
+    }
 
 	public function setBuffer($buffer = "", $offset = 0) {
 		$this->buffer = $buffer;
@@ -69,17 +79,31 @@ class BinaryStream {
 	}
 
 	public function get($len) {
-		if ($len < 0) {
-			$this->offset = strlen($this->buffer) - 1;
-			return "";
-		} else if ($len === true) {
-			return substr($this->buffer, $this->offset);
-		}
-		if (strlen($this->buffer) < $this->offset + $len) {
-			throw new \Exception('binary stream get error');
-		}
-		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
+        if($len === 0){
+            return "";
+        }
+
+        $buflen = strlen($this->buffer);
+        if($len === true){
+            $str = substr($this->buffer, $this->offset);
+            $this->offset = $buflen;
+            return $str;
+        }
+        if($len < 0){
+            $this->offset = $buflen - 1;
+            return "";
+        }
+        $remaining = $buflen - $this->offset;
+        if($remaining < $len){
+            throw new \Exception("Not enough bytes left in buffer: need $len, have $remaining");
+        }
+
+        return $len === 1 ? $this->buffer[$this->offset++] : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
+
+    public function getBool() : bool{
+        return $this->get(1) !== "\x00";
+    }
 
 	public function put($str) {
 		$this->buffer .= $str;
@@ -166,10 +190,7 @@ class BinaryStream {
 	}
 
 	public function getByte() {
-		if (strlen($this->buffer) < $this->offset + 1) {
-			throw new \Exception('binary stream getByte error');
-		}
-		return ord($this->buffer{$this->offset++});
+		return ord($this->buffer[$this->offset++]);
 	}
 
 	public function putByte($v) {
@@ -205,6 +226,15 @@ class BinaryStream {
 		$this->putLInt($uuid->getPart(3));
 		$this->putLInt($uuid->getPart(2));
 	}
+
+    public function getRemaining() : string{
+        $str = substr($this->buffer, $this->offset);
+        if($str === false){
+            throw new \Exception("No bytes left to read");
+        }
+        $this->offset = strlen($this->buffer);
+        return $str;
+    }
 
 	public function getSlot($playerProtocol) {
 		$id = $this->getSignedVarInt();
@@ -270,8 +300,46 @@ class BinaryStream {
 		}
 	}
 
+	public function getBlockPosition(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getUnsignedVarInt();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockPosition($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putUnsignedVarInt($y);
+		$this->putVarInt($z);
+	}
+
+	public function getBlockCoords(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getUnsignedVarInt();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockCoords($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putUnsignedVarInt($y);
+		$this->putVarInt($z);
+	}
+
 	public function feof() {
 		return !isset($this->buffer{$this->offset});
+	}
+
+/**
+	 * Reads an unsigned varint from the stream.
+	 */
+	public function getUnsignedVarInt(){
+		return Binary::readUnsignedVarInt($this);
+	}
+
+	/**
+	 * Writes an unsigned varint to the stream.
+	 */
+	public function putUnsignedVarInt($v){
+		$this->put(Binary::writeUnsignedVarInt($v));
 	}
 	
 	
