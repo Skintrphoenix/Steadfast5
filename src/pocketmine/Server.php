@@ -1693,7 +1693,8 @@ class Server{
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, PMAnvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
-		LevelProviderManager::addProvider($this, LevelDB::class);
+		//Not yet fully implemented
+		//LevelProviderManager::addProvider($this, LevelDB::class);
 
 Generator::addGenerator(Flat::class, "flat");
 			Generator::addGenerator(Normal::class, "normal");
