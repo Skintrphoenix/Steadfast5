@@ -58,6 +58,7 @@ use pocketmine\event\level\LevelUnloadEvent;
 use pocketmine\event\level\SpawnChangeEvent;
 use pocketmine\event\LevelTimings;
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\Timings;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
@@ -65,6 +66,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\generic\BaseLevelProvider;
 use pocketmine\level\format\generic\EmptyChunkSection;
 use pocketmine\level\format\LevelProvider;
+use pocketmine\level\generator\LightPopulationTask;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
@@ -1949,31 +1951,41 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function loadChunk($x, $z, $generate = true){
+	public function loadChunk($x, $z, $generate = true) {
 		if(isset($this->chunks[$index = self::chunkHash($x, $z)])){
 			return true;
 		}
 
+		$this->timings->syncChunkLoadTimer->startTiming();
+
 		$this->cancelUnloadChunkRequest($x, $z);
 
 		$chunk = $this->provider->getChunk($x, $z, $generate);
-		if($chunk !== null){
-			$this->chunks[$index] = $chunk;
-			$chunk->initChunk();
-		}else{
-			//$this->timings->syncChunkLoadTimer->startTiming();
-			$this->provider->loadChunk($x, $z, $generate);
-			//$this->timings->syncChunkLoadTimer->stopTiming();
-
-			if(($chunk = $this->provider->getChunk($x, $z)) !== null){
-				$this->chunks[$index] = $chunk;
-				$chunk->initChunk();
-			}else{
-				return false;
+		if($chunk === null){
+			if($generate){
+				throw new \InvalidStateException("Could not create new Chunk");
 			}
+			return false;
 		}
 
+		$this->chunks[$index] = $chunk;
+		$chunk->initChunk();
+
 		$this->server->getPluginManager()->callEvent(new ChunkLoadEvent($chunk, !$chunk->isGenerated()));
+
+		if(!$chunk->isLightPopulated() and $chunk->isPopulated() and $this->getServer()->getProperty("chunk-ticking.light-updates", false)){
+			$this->getServer()->getScheduler()->scheduleAsyncTask(new LightPopulationTask($this, $chunk));
+		}
+
+		if($this->isChunkInUse($x, $z)){
+			foreach($this->getChunkLoaders($x, $z) as $loader){
+				$loader->onChunkLoaded($chunk);
+			}
+		}else{
+			$this->unloadChunkRequest($x, $z);
+		}
+
+		$this->timings->syncChunkLoadTimer->stopTiming();
 
 		return true;
 	}
@@ -2218,18 +2230,16 @@ class Level implements ChunkManager, Metadatable{
 	
 
 	public function generateChunk(int $x, int $z, bool $force = false){
-		if (is_null($this->generator)) {
-			return;
-		}
 		if(count($this->chunkGenerationQueue) >= $this->chunkGenerationQueueSize and !$force){
 			return;
 		}
+
 		if(!isset($this->chunkGenerationQueue[$index = Level::chunkHash($x, $z)])){
-			//Timings::$generationTimer->startTiming();
+			Timings::$generationTimer->startTiming();
 			$this->chunkGenerationQueue[$index] = true;
 			$task = new GenerationTask($this, $this->getChunk($x, $z, true));
-			$this->server->getScheduler()->scheduleAsyncTask($task);			
-			//Timings::$generationTimer->stopTiming();
+			$this->server->getScheduler()->scheduleAsyncTask($task);
+			Timings::$generationTimer->stopTiming();
 		}
 	}
 	

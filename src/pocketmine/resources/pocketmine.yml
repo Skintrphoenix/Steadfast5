@@ -9,18 +9,18 @@ settings:
  #Show a console message when a plugin uses deprecated API methods
  deprecated-verbose: true
  #Enable plugin and core profiling by default
- enable-profiling: true
+ enable-profiling: false
  advanced-cache: true
  upnp-forwarding: false
  #Sends anonymous statistics to create usage reports
  send-usage: true
  #Number of AsyncTask workers
  #WARNING: This will increase global memory usage, but it won't be listed in the total.
- async-workers: 1
+ async-workers: auto
 
 debug:
  #If > 1, it will show debug messages in the console
- level: 1
+ level: 0
  #Enables /status
  commands: true
 
@@ -33,7 +33,7 @@ level-settings:
 
 chunk-sending:
  #Amount of chunks sent to players per tick
- per-tick: 1
+ per-tick: 40
  #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
  compression-level: 8
  #Amount of chunks sent around each player
@@ -41,21 +41,20 @@ chunk-sending:
 
 chunk-ticking:
  #Max amount of chunks processed each tick
- per-tick: 0
+ per-tick: 40
  #Radius of chunks around a player to tick
- tick-radius: 4
- #NOTE: This is currently not implemented
+ tick-radius: 3
  light-updates: false
- clear-tick-list: false
+ clear-tick-list: true
 
 chunk-generation:
  #Whether to run the generation on a different thread or on the main thread
  #Generation will be less glitchy on the main thread, but will lag more
  #Using this with fast generators is recommended
  #If enabled, the dedicated generation thread may leak memory
- use-async: false
+ use-async: true
  #Max. amount of chunks to generate per tick, only for use-async: false
- per-tick: 1
+ per-tick: 40
 
 chunk-gc:
  period-in-ticks: 600

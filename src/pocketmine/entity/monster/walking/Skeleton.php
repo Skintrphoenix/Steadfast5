@@ -19,6 +19,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\network\protocol\MobEquipmentPacket;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Skeleton extends WalkingMonster implements ProjectileSource{

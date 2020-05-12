@@ -22,7 +22,6 @@
 namespace pocketmine\math;
 
 use pocketmine\level\MovingObjectPosition;
-use pocketmine\math\Vector3;
 
 class AxisAlignedBB{
 
@@ -54,14 +53,32 @@ class AxisAlignedBB{
 	}
 
 	public function addCoord($x, $y, $z){
-		return new AxisAlignedBB(
-			$x < 0 ? $this->minX + $x : $this->minX, 
-			$y < 0 ? $this->minY + $y : $this->minY, 
-			$z < 0 ? $this->minZ + $z : $this->minZ, 
-			$x > 0 ? $this->maxX + $x : $this->maxX, 
-			$y > 0 ? $this->maxY + $y : $this->maxY, 
-			$z > 0 ? $this->maxZ + $z : $this->maxZ
-		);
+		$minX = $this->minX;
+		$minY = $this->minY;
+		$minZ = $this->minZ;
+		$maxX = $this->maxX;
+		$maxY = $this->maxY;
+		$maxZ = $this->maxZ;
+
+		if($x < 0){
+			$minX += $x;
+		}elseif($x > 0){
+			$maxX += $x;
+		}
+
+		if($y < 0){
+			$minY += $y;
+		}elseif($y > 0){
+			$maxY += $y;
+		}
+
+		if($z < 0){
+			$minZ += $z;
+		}elseif($z > 0){
+			$maxZ += $z;
+		}
+
+		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 	}
 
 	public function grow($x, $y, $z){
@@ -224,74 +241,89 @@ class AxisAlignedBB{
 	public function isVectorInXY(Vector3 $vector){
 		return $vector->x >= $this->minX and $vector->x <= $this->maxX and $vector->y >= $this->minY and $vector->y <= $this->maxY;
 	}
-	
-	public function getDistanceToLineStart(Vector3 $lineStart, Vector3 $lineStop) {
-		$tMin = ($this->minX - $lineStart->x) / $lineStop->x;
-		$tMax = ($this->maxX - $lineStart->x) / $lineStop->x;
 
-		if ($tMin > $tMax) {
-			$tmp = $tMin;
-			$tMin = $tMax;
-			$tMax = $tmp;
+	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
+		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
+		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
+		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
+		$v4 = $pos1->getIntermediateWithYValue($pos2, $this->maxY);
+		$v5 = $pos1->getIntermediateWithZValue($pos2, $this->minZ);
+		$v6 = $pos1->getIntermediateWithZValue($pos2, $this->maxZ);
+
+		if($v1 !== null and !$this->isVectorInYZ($v1)){
+			$v1 = null;
 		}
 
-		$tYMin = ($this->minY - $lineStart->y) / $lineStop->y;
-		$tYMax = ($this->minY - $lineStart->y) / $lineStop->y;
-
-		if ($tYMin > $tYMax) {
-			$tmp = $tYMin;
-			$tYMin = $tYMax;
-			$tYMax = $tmp;
+		if($v2 !== null and !$this->isVectorInYZ($v2)){
+			$v2 = null;
 		}
 
-		if (($tMin > $tYMax) || ($tYMin > $tMax)) {
-			return false;
+		if($v3 !== null and !$this->isVectorInXZ($v3)){
+			$v3 = null;
 		}
 
-		if ($tYMin > $tMin) {
-			$tMin = $tYmin;
+		if($v4 !== null and !$this->isVectorInXZ($v4)){
+			$v4 = null;
 		}
 
-		if ($tYMax < $tMax) {
-			$tMax = $tYMax;
+		if($v5 !== null and !$this->isVectorInXY($v5)){
+			$v5 = null;
 		}
 
-		$tZMin = ($this->minZ - $lineStart->z) / $lineStop->z;
-		$tZMax = ($this->maxZ - $lineStart->z) / $lineStop->z;
-
-		if ($tZMin > $tZMax) {
-			$tmp = $tZMin;
-			$tZMin = $tZMax;
-			$tZMax = $tmp;
+		if($v6 !== null and !$this->isVectorInXY($v6)){
+			$v6 = null;
 		}
 
-		if (($tMin > $tZMax) || ($tZMin > $tMax)) {
-			return false;
+		$vector = null;
+
+
+		if($v1 !== null and ($vector === null or $pos1->distanceSquared($v1) < $pos1->distanceSquared($vector))){
+			$vector = $v1;
 		}
 
-		if ($tZMin > $tMin) {
-			$tMin = $tZMin;
+		if($v2 !== null and ($vector === null or $pos1->distanceSquared($v2) < $pos1->distanceSquared($vector))){
+			$vector = $v2;
 		}
 
-		if ($tZMax < $tMax) {
-			$tMax = $tZMax;
+		if($v3 !== null and ($vector === null or $pos1->distanceSquared($v3) < $pos1->distanceSquared($vector))){
+			$vector = $v3;
 		}
-		
-		var_dump($tMin, $tMax);
 
-		return true; 
+		if($v4 !== null and ($vector === null or $pos1->distanceSquared($v4) < $pos1->distanceSquared($vector))){
+			$vector = $v4;
+		}
+
+		if($v5 !== null and ($vector === null or $pos1->distanceSquared($v5) < $pos1->distanceSquared($vector))){
+			$vector = $v5;
+		}
+
+		if($v6 !== null and ($vector === null or $pos1->distanceSquared($v6) < $pos1->distanceSquared($vector))){
+			$vector = $v6;
+		}
+
+		if($vector === null){
+			return null;
+		}
+
+		$f = -1;
+
+		if($vector === $v1){
+			$f = 4;
+		}elseif($vector === $v2){
+			$f = 5;
+		}elseif($vector === $v3){
+			$f = 0;
+		}elseif($vector === $v4){
+			$f = 1;
+		}elseif($vector === $v5){
+			$f = 2;
+		}elseif($vector === $v6){
+			$f = 3;
+		}
+
+		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
 	
-	/**
-	 * I don't know yet how it exactly works
-	 * 
-	 * @param float $dst1
-	 * @param float $dst2
-	 * @param Vector3 $a
-	 * @param Vector3 $b
-	 * @param Vector3 $result
-	 * @return boolean
-	 */
 	protected function getIntersection($dst1, $dst2, Vector3 $a, Vector3 $b, Vector3 &$result) {
 		if ($dst1 * $dst2 >= 0.0 || $dst1 == $dst2) return false;
 		$result->x = $a->x + ($b->x - $a->x) * ($dst1 / ($dst1 - $dst2));
@@ -300,13 +332,6 @@ class AxisAlignedBB{
 		return true;
 	}
 
-	/**
-	 * I don't know yet how it exactly works
-	 * 
-	 * @param Vector3 $result
-	 * @param type $axis
-	 * @return boolean
-	 */
 	protected function inBox(Vector3 &$result, $axis) {
 		if ($axis == 1 && $result->z > $this->minZ && $result->z < $this->maxZ && $result->y > $this->minY && $result->y < $this->maxY) return true;
 		if ($axis == 2 && $result->z > $this->minZ && $result->z < $this->maxZ && $result->x > $this->minX && $result->x < $this->maxX) return true;
@@ -314,13 +339,6 @@ class AxisAlignedBB{
 		return false;
 	}
 	
-	/**
-	 * 
-	 * @param Vector3 $a line start
-	 * @param Vector3 $b line stop
-	 * @param Vector3 $result intersection point
-	 * @return boolean
-	 */
 	public function getIntersectionWithLine(Vector3 $a, Vector3 $b, Vector3 &$result) {
 		if ($a->x > $this->minX && $a->x < $this->maxX &&
 			$a->y > $this->minY && $a->y < $this->maxY &&
@@ -341,52 +359,6 @@ class AxisAlignedBB{
 		}
 
 		return false;
-	}
-
-	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
-		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
-		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
-		$v3 = $pos1->getIntermediateWithYValue($pos2, $this->minY);
-		$v4 = $pos1->getIntermediateWithYValue($pos2, $this->maxY);
-		$v5 = $pos1->getIntermediateWithZValue($pos2, $this->minZ);
-		$v6 = $pos1->getIntermediateWithZValue($pos2, $this->maxZ);
-
-		$f = -1;
-		$vector = null;
-		if ($v1 !== null && $this->isVectorInYZ($v1)) {
-			$vector = $v1;
-			$f = 4;
-		}
-
-		if ($v2 !== null && $this->isVectorInYZ($v2) && ($vector === null || $pos1->distanceSquared($v2) < $pos1->distanceSquared($vector))) {
-			$vector = $v2;
-			$f = 5;
-		}
-
-		if ($v3 !== null && $this->isVectorInXZ($v3) && ($vector === null || $pos1->distanceSquared($v3) < $pos1->distanceSquared($vector))) {
-			$vector = $v3;
-			$f = 0;
-		}
-
-		if ($v4 !== null && $this->isVectorInXZ($v4) && ($vector === null || $pos1->distanceSquared($v4) < $pos1->distanceSquared($vector))) {
-			$vector = $v4;
-			$f = 1;
-		}
-
-		if ($v5 !== null && $this->isVectorInXY($v5) && ($vector === null || $pos1->distanceSquared($v5) < $pos1->distanceSquared($vector))) {
-			$vector = $v5;
-			$f = 2;
-		}
-
-		if ($v6 !== null && $this->isVectorInXY($v6) && ($vector === null || $pos1->distanceSquared($v6) < $pos1->distanceSquared($vector))) {
-			$vector = $v6;
-			$f = 3;
-		}
-
-		if ($vector === null) {
-			return null;
-		}
-		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
 
 	public function __toString(){

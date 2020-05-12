@@ -15,7 +15,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item;
 
-class Creeper extends WalkingMonster implements Explosive{
+class Creeper extends WalkingMonster {
 	const NETWORK_ID = 33;
 
 	public $width = 0.72;

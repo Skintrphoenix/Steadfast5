@@ -53,7 +53,7 @@ class Flat extends Generator{
 		return $this->options;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "flat";
 	}
 
@@ -67,7 +67,7 @@ class Flat extends Generator{
 			$ores = new Ore();
 			$ores->setOreTypes([
 				new object\OreType(new CoalOre(), 20, 16, 0, 128),
-				new object\OreType(new IronOre(), 20, 8, 0, 64),
+				new object\OreType(New IronOre(), 20, 8, 0, 64),
 				new object\OreType(new RedstoneOre(), 8, 7, 0, 16),
 				new object\OreType(new LapisOre(), 1, 6, 0, 32),
 				new object\OreType(new GoldOre(), 2, 8, 0, 32),
@@ -120,7 +120,7 @@ class Flat extends Generator{
 			for($X = 0; $X < 16; ++$X){
 				$this->chunk->setBiomeId($X, $Z, $biome);
 				$this->chunk->setBiomeColor($X, $Z, $R, $G, $B);
-				for($y = 0; $y < $this->level->getMaxY(); ++$y){
+				for($y = 0; $y < 128; ++$y){
 					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
 				}
 			}
@@ -159,7 +159,7 @@ class Flat extends Generator{
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
-		if($this->chunk === null) {
+		if($this->chunk === null){
 			if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 				$this->parsePreset($this->options["preset"], $chunkX, $chunkZ);
 			}else{

@@ -65,9 +65,15 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\level\format\anvil\Anvil;
 use pocketmine\level\format\pmanvil\PMAnvil;
+use pocketmine\level\format\leveldb\LevelDB;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
+use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\VoidWorld;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\hell\Nether;
+use pocketmine\level\generator\normal\Normal;
+use pocketmine\level\generator\normal\Normal2;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
@@ -1687,6 +1693,15 @@ class Server{
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, PMAnvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
+		LevelProviderManager::addProvider($this, LevelDB::class);
+
+Generator::addGenerator(Flat::class, "flat");
+			Generator::addGenerator(Normal::class, "normal");
+			Generator::addGenerator(Normal::class, "default");
+			Generator::addGenerator(Nether::class, "hell");
+			Generator::addGenerator(Nether::class, "nether");
+			Generator::addGenerator(VoidWorld::class, "void");
+			Generator::addGenerator(Normal2::class, "normal2");
 		
 		foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 			if($this->loadLevel($name) === false){

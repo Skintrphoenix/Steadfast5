@@ -34,19 +34,19 @@ class MountainsBiome extends GrassyBiome{
 		$this->addPopulator($trees);
 
 		$tallGrass = new TallGrass();
-		$tallGrass->setBaseAmount(1);
+		$tallGrass->setBaseAmount(6);
 
 		$this->addPopulator($tallGrass);
 
 		//TODO: add emerald
 
-		$this->setElevation(63, 130);
+		$this->setElevation(63, 127);
 
 		$this->temperature = 0.4;
 		$this->rainfall = 0.5;
 	}
 
-	public function getName(){
+	public function getName() : string{
 		return "Mountains";
 	}
 }
