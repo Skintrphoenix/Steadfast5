@@ -47,6 +47,7 @@ use pocketmine\block\Wheat;
 use pocketmine\entity\Arrow;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Item as DroppedItem;
+use pocketmine\entity\Lightning;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -70,6 +71,8 @@ use pocketmine\level\generator\LightPopulationTask;
 use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\level\particle\Particle;
 use pocketmine\level\sound\Sound;
+use pocketmine\level\weather\Weather;
+use pocketmine\level\weather\WeatherManager;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Math;
 use pocketmine\math\Vector2;
@@ -152,6 +155,9 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var LevelProvider */
 	protected $provider;
+
+	/** @var Weather */
+	private $weather;
 
 	/** @var Player[][] */
 	protected $usedChunks = [];
@@ -328,6 +334,13 @@ class Level implements ChunkManager, Metadatable{
 		if ($this->server->getAutoGenerate()) {
 			$this->generator = Generator::getGenerator($this->provider->getGenerator());
 		}
+		$this->weather = new Weather($this, 0);
+		if($this->server->weatherEnabled){
+			WeatherManager::registerLevel($this);
+			$this->weather->setCanCalculate(true);
+		} else {
+			$this->weather->setCanCalculate(false);
+		}
 	}
 	
 	public function initLevel(){
@@ -467,6 +480,8 @@ class Level implements ChunkManager, Metadatable{
 			$this->server->setDefaultLevel(null);
 		}
 
+		if($this->weather != null) WeatherManager::unregisterLevel($this);
+
 		$this->close();
 
 		return true;
@@ -551,6 +566,8 @@ class Level implements ChunkManager, Metadatable{
 		if(($currentTick % 200) === 0 && $this->server->getConfigBoolean("time-update", true)){
 			$this->sendTime();
 		}
+
+		$this->weather->calcWeather($currentTick);
 
 		$this->unloadChunks();
 
@@ -791,6 +808,13 @@ class Level implements ChunkManager, Metadatable{
 
 	public function __debugInfo(){
 		return [];
+	}
+
+	/**
+	 * @return Weather
+	 */
+	public function getWeather(){
+		return $this->weather;
 	}
 
 	/**
@@ -1765,6 +1789,59 @@ class Level implements ChunkManager, Metadatable{
 		}
 		$this->chunkCacheClear($x, $z);
 		$chunk->setChanged();
+	}
+
+	/**
+	 * Directly send a lightning to a player
+	 *
+	 * @deprecated
+	 *
+	 * @param int    $x
+	 * @param int    $y
+	 * @param int    $z
+	 * @param Player $p
+	 */
+	public function sendLighting(int $x, int $y, int $z, Player $p){
+		$pk = new AddEntityPacket();
+		$pk->type = Lightning::NETWORK_ID;
+		$pk->eid = mt_rand(10000000, 100000000);
+		$pk->x = $x;
+		$pk->y = $y;
+		$pk->z = $z;
+		$pk->metadata = array(3, 3, 3, 3);
+		$p->dataPacket($pk);
+	}
+
+	/**
+	 * Add a lightning
+	 *
+	 * @param Vector3 $pos
+	 * @return Lightning
+	 */
+	public function spawnLightning(Vector3 $pos) : Lightning{
+		$nbt = new Compound("", [
+			"Pos" => new Enum("Pos", [
+				new DoubleTag("", $pos->getX()),
+				new DoubleTag("", $pos->getY()),
+				new DoubleTag("", $pos->getZ())
+			]),
+			"Motion" => new Enum("Motion", [
+				new DoubleTag("", 0),
+				new DoubleTag("", 0),
+				new DoubleTag("", 0)
+			]),
+			"Rotation" => new Enum("Rotation", [
+				new FloatTag("", 0),
+				new FloatTag("", 0)
+			]),
+		]);
+
+		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
+
+		$lightning = new Lightning($chunk, $nbt);
+		$lightning->spawnToAll();
+
+		return $lightning;
 	}
 
 	/**

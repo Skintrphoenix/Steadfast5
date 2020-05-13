@@ -46,6 +46,7 @@ use pocketmine\entity\Snowball;
 use pocketmine\entity\Egg;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
+use pocketmine\entity\Lightning;
 use pocketmine\entity\Minecart;
 use pocketmine\entity\Boat;
 use pocketmine\entity\FishingHook;
@@ -295,6 +296,12 @@ class Server{
 	private $animalLimit;
 	private $useMonster ;
 	private $monsterLimit;
+
+	public $weatherEnabled = true;
+	public $weatherRandomDurationMin = 6000;
+	public $weatherRandomDurationMax = 12000;
+	public $lightningTime = 200;
+	public $lightningFire = false;
 		
 	public $packetMaker = null;
 	
@@ -1561,7 +1568,12 @@ class Server{
 			"auto-generate" => true,
 			"save-player-data" => true,
 			"time-update" => true,
-			"use-encrypt" => false
+			"use-encrypt" => false,
+			"level.weather" => true,
+			"level.weather-random-duration-min" => 6000,
+			"level.weather-random-duration-max" => 12000,
+			"level.lightning-time" => 200,
+			"level.lightning-fire" => false
 		]);
 
 		ServerScheduler::$WORKERS = 4;
@@ -1587,6 +1599,12 @@ class Server{
 		@touch($this->dataPath . "banned-ips.txt");
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 		$this->banByIP->load();
+
+		$this->weatherEnabled = $this->getConfigBoolean("level.weather", true);
+		$this->weatherRandomDurationMin = $this->getConfigInt("level.weather-random-duration-min", 6000);
+		$this->weatherRandomDurationMax = $this->getConfigInt("level.weather-random-duration-max", 12000);
+		$this->lightningTime = $this->getConfigInt("level.lightning-time", 200);
+		$this->lightningFire = $this->getConfigBoolean("level.lightning-fire", false);
 
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
@@ -2608,6 +2626,7 @@ Generator::addGenerator(Flat::class, "flat");
 		Entity::registerEntity(Enderman::class);
 		Entity::registerEntity(Ghast::class);
 		Entity::registerEntity(IronGolem::class);
+		Entity::registerEntity(Lightning::class);
 		Entity::registerEntity(Mooshroom::class);
 		Entity::registerEntity(Ocelot::class);
 		Entity::registerEntity(Pig::class);
