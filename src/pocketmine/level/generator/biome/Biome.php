@@ -23,7 +23,7 @@ namespace pocketmine\level\generator\biome;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\normal\biome\SwampBiome;
+use pocketmine\level\generator\ender\biome\EnderBiome;
 use pocketmine\level\generator\normal\biome\DesertBiome;
 use pocketmine\level\generator\normal\biome\ForestBiome;
 use pocketmine\level\generator\normal\biome\IcePlainsBiome;
@@ -32,12 +32,11 @@ use pocketmine\level\generator\normal\biome\OceanBiome;
 use pocketmine\level\generator\normal\biome\PlainBiome;
 use pocketmine\level\generator\normal\biome\RiverBiome;
 use pocketmine\level\generator\normal\biome\SmallMountainsBiome;
+use pocketmine\level\generator\normal\biome\SwampBiome;
 use pocketmine\level\generator\normal\biome\TaigaBiome;
-use pocketmine\level\generator\hell\HellBiome;
+use pocketmine\level\generator\normal\biome\MesaBiome;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
-
-use pocketmine\level\generator\populator\Flower;
 
 abstract class Biome{
 
@@ -49,9 +48,9 @@ abstract class Biome{
 	const TAIGA = 5;
 	const SWAMP = 6;
 	const RIVER = 7;
-
+    
 	const HELL = 8;
-
+    const END = 9;
 	const ICE_PLAINS = 12;
 
 
@@ -60,7 +59,10 @@ abstract class Biome{
 
 	const BIRCH_FOREST = 27;
 
-
+    const MESA = 37;
+    const MESA_PLATEAU_F = 38;
+    const MESA_PLATEAU = 39;
+	
 	const MAX_BIOMES = 256;
 
 	/** @var Biome[] */
@@ -78,26 +80,10 @@ abstract class Biome{
 
 	protected $rainfall = 0.5;
 	protected $temperature = 0.5;
-	protected $grassColor = 0;
 
 	protected static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
 		$biome->setId((int) $id);
-		$biome->grassColor = self::generateBiomeColor($biome->getTemperature(), $biome->getRainfall());
-
-		$flowerPopFound = false;
-
-		foreach($biome->getPopulators() as $populator){
-			if($populator instanceof Flower){
-				$flowerPopFound = true;
-				break;
-			}
-		}
-
-		if($flowerPopFound === false){
-			$flower = new Flower();
-			$biome->addPopulator($flower);
-		}
 	}
 
 	public static function init(){
@@ -109,12 +95,11 @@ abstract class Biome{
 		self::register(self::TAIGA, new TaigaBiome());
 		self::register(self::SWAMP, new SwampBiome());
 		self::register(self::RIVER, new RiverBiome());
-
+        self::register(self::MESA, new MesaBiome());
 		self::register(self::ICE_PLAINS, new IcePlainsBiome());
-
+       
 
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
-		self::register(self::HELL, new HellBiome());
 
 		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
 	}
@@ -125,7 +110,7 @@ abstract class Biome{
 	 * @return Biome
 	 */
 	public static function getBiome($id){
-		return isset(self::$biomes[$id]) ? self::$biomes[$id] : self::$biomes[self::OCEAN];
+		return self::$biomes[$id] ?? self::$biomes[self::OCEAN];
 	}
 
 	public function clearPopulators(){
@@ -157,7 +142,7 @@ abstract class Biome{
 		return $this->id;
 	}
 
-	public abstract function getName();
+	abstract public function getName();
 
 	public function getMinElevation(){
 		return $this->minElevation;
@@ -193,30 +178,4 @@ abstract class Biome{
 	public function getRainfall(){
 		return $this->rainfall;
 	}
-
-	private static function generateBiomeColor($temperature, $rainfall){
-		$x = (1 - $temperature) * 255;
-		$z = (1 - $rainfall * $temperature) * 255;
-		$c = self::interpolateColor(256, $x, $z, [0x47, 0xd0, 0x33], [0x6c, 0xb4, 0x93], [0xbf, 0xb6, 0x55], [0x80, 0xb4, 0x97]);
-		return ((int) ($c[0] << 16)) | (int) (($c[1] << 8)) | (int) ($c[2]);
-	}
-
-
-	private static function interpolateColor($size, $x, $z, $c1, $c2, $c3, $c4){
-		$l1 = self::lerpColor($c1, $c2, $x / $size);
-		$l2 = self::lerpColor($c3, $c4, $x / $size);
-
-		return self::lerpColor($l1, $l2, $z / $size);
-	}
-
-	private static function lerpColor($a, $b, $s){
-		$invs = 1 - $s;
-		return [$a[0] * $invs + $b[0] * $s, $a[1] * $invs + $b[1] * $s, $a[2] * $invs + $b[2] * $s];
-	}
-
-
-	/**
-	 * @return int (Red|Green|Blue)
-	 */
-	abstract public function getColor();
 }

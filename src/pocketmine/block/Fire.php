@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  * 
  *
-*/
+ */
 
 namespace pocketmine\block;
 
@@ -51,7 +51,7 @@ class Fire extends Flowable{
 	}
 
 	public function isBreakable(Item $item){
-		return false;
+		return true;
 	}
 
 	public function canBeReplaced(){

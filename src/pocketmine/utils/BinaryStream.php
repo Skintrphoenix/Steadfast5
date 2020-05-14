@@ -15,7 +15,7 @@ class BinaryStream {
     private $offset = 0;
     public $buffer = "";
 
-	private function writeErrorLog($depth = 3) {
+	/*private function writeErrorLog($depth = 3) {
 		$depth = max($depth, 3);
 		$backtrace = debug_backtrace(2, $depth);
 		$result = __CLASS__ . "::" . __METHOD__ . " -> " . PHP_EOL;
@@ -23,9 +23,9 @@ class BinaryStream {
 			$result .= "\t[line " . (isset($backtrace[$k]['line']) ? $backtrace[$k]['line'] : 'unknown line') . "] " . (isset($backtrace[$k]['class']) ? $backtrace[$k]['class'] : 'unknown class') . " -> " . (isset($backtrace[$k]['function']) ? $backtrace[$k]['function'] : 'unknown function') . PHP_EOL;
 		}
 		error_log($result);
-	}
+	}*/
 
-	public function __get($name) {
+	/*public function __get($name) {
 		$this->writeErrorLog();
 		switch ($name) {
 			case "buffer":
@@ -33,9 +33,9 @@ class BinaryStream {
 			case "offset":
 				return $this->offset;
 		}
-	}
+	}*/
 
-	public function __set($name, $value) {
+	/*public function __set($name, $value) {
 		$this->writeErrorLog();
 		switch ($name) {
 			case "buffer":
@@ -45,7 +45,7 @@ class BinaryStream {
 				$this->offset = $value;
 				return;
 		}
-	}
+	}*/
 	
 	public function __construct($buffer = "", $offset = 0) {
 		$this->setBuffer($buffer, $offset);

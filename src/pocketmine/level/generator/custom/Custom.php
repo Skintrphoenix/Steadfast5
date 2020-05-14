@@ -1,25 +1,7 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
-*/
 
-namespace pocketmine\level\generator\hell;
+namespace pocketmine\level\generator\custom;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
@@ -31,7 +13,7 @@ use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
-class Nether extends Generator{
+class Custom extends Generator{
 
 	/** @var Populator[] */
 	private $populators = [];
@@ -80,7 +62,7 @@ class Nether extends Generator{
 	}
 
 	public function getName(){
-		return "normal";
+		return "custom";
 	}
 
 	public function getSettings(){
@@ -94,18 +76,7 @@ class Nether extends Generator{
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
 		$this->random->setSeed($this->level->getSeed());
 
-		/*$ores = new Ore();
-		$ores->setOreTypes([
-			new OreType(new CoalOre(), 20, 16, 0, 128),
-			new OreType(New IronOre(), 20, 8, 0, 64),
-			new OreType(new RedstoneOre(), 8, 7, 0, 16),
-			new OreType(new LapisOre(), 1, 6, 0, 32),
-			new OreType(new GoldOre(), 2, 8, 0, 32),
-			new OreType(new DiamondOre(), 1, 7, 0, 16),
-			new OreType(new Dirt(), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128)
-		]);
-		$this->populators[] = $ores;*/
+		
 	}
 
 	public function generateChunk($chunkX, $chunkZ){
@@ -118,7 +89,7 @@ class Nether extends Generator{
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
 
-				$biome = Biome::getBiome(Biome::HELL);
+				$biome = Biome::getBiome(Biome::MESA);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 
 				for($y = 0; $y < 128; ++$y){
@@ -130,9 +101,9 @@ class Nether extends Generator{
 					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setBlockId($x, $y, $z, Block::NETHERRACK);
+						$chunk->setBlockId($x, $y, $z, Block::STONE);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockId($x, $y, $z, Block::STILL_LAVA);
+						$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 					}
 				}
 			}
