@@ -84,9 +84,6 @@ class EnchantingTable extends Transparent {
 
 	public function onActivate(Item $item, Player $player = null) {
 		if ($player instanceof Player) {
-			if ($player->isCreative()) {
-				return true;
-			}
 			$tile = $this->getLevel()->getTile($this);
 			$enchantTable = null;
 			if ($tile instanceof EnchantTable) {
