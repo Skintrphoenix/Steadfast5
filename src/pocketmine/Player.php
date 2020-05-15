@@ -456,8 +456,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	protected $additionalSkinData = [];
 	protected $playerListIsSent = false;
 
-	public function getLeaveMessage(){
-		return "";
+	public function getLeaveMessage() {
+		return TextFormat::YELLOW . $this->getDisplayName() . " left the game";
 	}
 
 	/**
