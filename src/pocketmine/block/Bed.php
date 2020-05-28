@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  * 
  *
-*/
+ */
 
 namespace pocketmine\block;
 
@@ -30,12 +30,9 @@ use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\level\Level;
 
 class Bed extends Transparent{
-	
-	const NIGHT_START = 16000;
-	const NIGHT_END = 29000;
-	const FULL_DAY = 30000;
 
 	protected $id = self::BED_BLOCK;
 
@@ -67,10 +64,10 @@ class Bed extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		return false;
-		$time = $this->getLevel()->getTime() % self::FULL_DAY;
+		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
 
-		$isNight = ($time >= self::NIGHT_START and $time < self::NIGHT_END);
+		$isNight = ($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE);
+
 		if($player instanceof Player and !$isNight){
 			$player->sendMessage(TextFormat::GRAY . "You can only sleep at night");
 			return true;
