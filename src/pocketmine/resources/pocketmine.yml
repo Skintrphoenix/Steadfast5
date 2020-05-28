@@ -37,7 +37,7 @@ chunk-sending:
  #Compression level used when sending chunks. Higher = more CPU, less bandwidth usage
  compression-level: 8
  #Amount of chunks sent around each player
- max-chunks: 256
+ max-chunks: 4
 
 chunk-ticking:
  #Max amount of chunks processed each tick
@@ -54,7 +54,7 @@ chunk-generation:
  #If enabled, the dedicated generation thread may leak memory
  use-async: true
  #Max. amount of chunks to generate per tick, only for use-async: false
- per-tick: 40
+ per-tick: 8
 
 chunk-gc:
  period-in-ticks: 600
