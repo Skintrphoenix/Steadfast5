@@ -44,8 +44,8 @@ if(!defined("ENDIANNESS")){
 }
 
 class Binary{
-	public const BIG_ENDIAN = 0x00;
-	public const LITTLE_ENDIAN = 0x01;
+	const BIG_ENDIAN = 0x00;
+	const LITTLE_ENDIAN = 0x01;
 
 	public static function signByte(int $value) : int{
 		if(PHP_INT_SIZE === 8) {
