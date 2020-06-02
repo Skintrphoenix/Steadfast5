@@ -48,7 +48,11 @@ class Binary{
 	public const LITTLE_ENDIAN = 0x01;
 
 	public static function signByte(int $value) : int{
-		return $value << 56 >> 56;
+		if(PHP_INT_SIZE === 8) {
+			return $value << 56 >> 56;
+		} else {
+			return $value << 24 >> 24;
+		}
 	}
 
 	public static function unsignByte(int $value) : int{
@@ -56,7 +60,11 @@ class Binary{
 	}
 
 	public static function signShort(int $value) : int{
-		return $value << 48 >> 48;
+		if(PHP_INT_SIZE === 8) {
+			return $value << 48 >> 48;
+		} else {
+			return $value << 16 >> 16;
+		}	
 	}
 
 	public static function unsignShort(int $value) : int{
