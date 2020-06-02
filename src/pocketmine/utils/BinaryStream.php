@@ -327,40 +327,13 @@ class BinaryStream {
 	public function feof() {
 		return !isset($this->buffer{$this->offset});
 	}
-
-/**
-	 * Reads an unsigned varint from the stream.
-	 */
-	public function getUnsignedVarInt(){
-		return Binary::readUnsignedVarInt($this);
-	}
-
-	/**
-	 * Writes an unsigned varint to the stream.
-	 */
-	public function putUnsignedVarInt($v){
-		$this->put(Binary::writeUnsignedVarInt($v));
-	}
-	
-	
+		
 	public function getSignedVarInt() {
-		$result = $this->getVarInt();
-		if ($result % 2 == 0) {
-			$result = $result / 2;
-		} else {
-			$result = (-1) * ($result + 1) / 2;
-		}
-		return $result;
+		return Binary::readSignedVarInt($this);;
 	}
 
 	public function getVarInt() {
-		$result = $shift = 0;
-		do {
-			$byte = $this->getByte();
-			$result |= ($byte & 0x7f) << $shift;
-			$shift += 7;
-		} while ($byte > 0x7f);
-		return $result;
+		return Binary::readVarInt($this);;
 	}
 
 	public function putSignedVarInt($v) {
