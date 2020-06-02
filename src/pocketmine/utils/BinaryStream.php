@@ -301,27 +301,15 @@ class BinaryStream {
 	}
 
 	public function getBlockPosition(&$x, &$y, &$z){
-		$x = $this->getVarInt();
-		$y = $this->getUnsignedVarInt();
-		$z = $this->getVarInt();
+		$x = $this->getSignedVarInt();
+		$y = $this->getVarInt();
+		$z = $this->getSignedVarInt();
 	}
 
 	public function putBlockPosition($x, $y, $z){
-		$this->putVarInt($x);
-		$this->putUnsignedVarInt($y);
-		$this->putVarInt($z);
-	}
-
-	public function getBlockCoords(&$x, &$y, &$z){
-		$x = $this->getVarInt();
-		$y = $this->getUnsignedVarInt();
-		$z = $this->getVarInt();
-	}
-
-	public function putBlockCoords($x, $y, $z){
-		$this->putVarInt($x);
-		$this->putUnsignedVarInt($y);
-		$this->putVarInt($z);
+		$this->putSignedVarInt($x);
+		$this->putVarInt($y);
+		$this->putSignedVarInt($z);
 	}
 
 	public function feof() {
