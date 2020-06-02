@@ -14,14 +14,10 @@ class ItemFrameDropItemPacket extends PEPacket{
 	public $z;
 
 	public function decode($playerProtocol){
-        //$this->getHeader($playerProtocol);
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		//$this->item = $this->getSlot($playerProtocol);
 	}
 
 	public function encode($playerProtocol){
-        //$this->reset($playerProtocol);
-        //$this->putBlockCoords($this->x, $this->y, $this->z);
-        //$this->setS
+        	$this->putBlockPosition($this->x, $this->y, $this->z);
 	}
 }
