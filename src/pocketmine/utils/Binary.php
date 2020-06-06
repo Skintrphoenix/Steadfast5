@@ -75,7 +75,7 @@ class Binary{
 		if(PHP_INT_SIZE === 8) {
 			return $value << 32 >> 32;
 		} else {
-			return $value << 0 >> 0;
+			return $value;
 		}
 	}
 
