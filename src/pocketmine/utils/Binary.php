@@ -306,7 +306,7 @@ class Binary{
 	 * @return float
 	 */
 	public static function readFloat(string $str) : float{
-		return unpack("G", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", $str)[1] : unpack("f", strrev($str))[1];
 	}
 
 	/**
@@ -329,7 +329,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeFloat(float $value) : string{
-		return pack("G", $value);
+		return ENDIANNESS === self::BIG_ENDIAN ? pack("f", $value) : strrev(pack("f", $value));
 	}
 
 	/**
@@ -340,7 +340,7 @@ class Binary{
 	 * @return float
 	 */
 	public static function readLFloat(string $str) : float{
-		return unpack("g", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("f", strrev($str))[1] : unpack("f", $str)[1];
 	}
 
 	/**
@@ -363,7 +363,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLFloat(float $value) : string{
-		return pack("g", $value);
+		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("f", $value)) : pack("f", $value);
 	}
 
 	/**
@@ -385,7 +385,7 @@ class Binary{
 	 * @return float
 	 */
 	public static function readDouble(string $str) : float{
-		return unpack("E", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", $str)[1] : unpack("d", strrev($str))[1];
 	}
 
 	/**
@@ -396,7 +396,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeDouble(float $value) : string{
-		return pack("E", $value);
+		return ENDIANNESS === self::BIG_ENDIAN ? pack("d", $value) : strrev(pack("d", $value));
 	}
 
 	/**
@@ -407,7 +407,7 @@ class Binary{
 	 * @return float
 	 */
 	public static function readLDouble(string $str) : float{
-		return unpack("e", $str)[1];
+		return ENDIANNESS === self::BIG_ENDIAN ? unpack("d", strrev($str))[1] : unpack("d", $str)[1];
 	}
 
 	/**
@@ -418,7 +418,7 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLDouble(float $value) : string{
-		return pack("e", $value);
+		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("d", $value)) : pack("d", $value);
 	}
 
 	/**
