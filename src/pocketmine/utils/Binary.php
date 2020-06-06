@@ -429,7 +429,19 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLong(string $str) : int{
-		return unpack("J", $str)[1];
+		if(PHP_INT_SIZE === 8) {
+			return unpack("J", $str)[1];
+		} else {
+			$value = "0";
+			for($i = 0; $i < 8; $i += 2){
+				$value = bcmul($value, "65536", 0);
+				$value = bcadd($value, (string) self::readShort(substr($x, $i, 2)), 0);
+			}
+			if(bccomp($value, "9223372036854775807") == 1){
+				$value = bcadd($value, "-18446744073709551616");
+			}
+			return $value;
+		}
 	}
 
 	/**
@@ -440,7 +452,19 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLong(int $value) : string{
-		return pack("J", $value);
+		if(PHP_INT_SIZE === 8){
+			return pack("J", $value);
+		} else {
+			$x = "";
+			$value = (string) $value;
+			if(bccomp($value, "0") == -1){
+				$value = bcadd($value, "18446744073709551616");
+			}
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "281474976710656"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "4294967296"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "65536"), "65536"));
+			$x .= self::writeShort((int) bcmod($value, "65536"));
+			return $x;
 	}
 
 	/**
@@ -451,7 +475,11 @@ class Binary{
 	 * @return int
 	 */
 	public static function readLLong(string $str) : int{
-		return unpack("P", $str)[1];
+		if(PHP_INT_SIZE === 8){
+			return unpack("P", $str)[1];
+		} else {
+			self::readLong(strrev($str));
+		}
 	}
 
 	/**
@@ -462,7 +490,11 @@ class Binary{
 	 * @return string
 	 */
 	public static function writeLLong(int $value) : string{
-		return pack("P", $value);
+		if(PHP_INT_SIZE === 8){
+			return pack("P", $value);
+		} else {
+			strrev(self::writeLong($value));
+		}
 	}
 
 	/**
