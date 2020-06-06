@@ -465,6 +465,7 @@ class Binary{
 			$x .= self::writeShort((int) bcmod(bcdiv($value, "65536"), "65536"));
 			$x .= self::writeShort((int) bcmod($value, "65536"));
 			return $x;
+		}
 	}
 
 	/**
