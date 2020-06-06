@@ -72,7 +72,11 @@ class Binary{
 	}
 
 	public static function signInt(int $value) : int{
-		return $value << 32 >> 32;
+		if(PHP_INT_SIZE === 8) {
+			return $value << 32 >> 32;
+		} else {
+			return $value << 0 >> 0;
+		}
 	}
 
 	public static function unsignInt(int $value) : int{
