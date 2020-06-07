@@ -49,40 +49,40 @@ class Binary{
 	public const BIG_ENDIAN = 0x00;
 	public const LITTLE_ENDIAN = 0x01;
 
-	public static function signByte(int $value) : int{
+	public static function signByte($value) {
 		return $value << 56 >> 56;
 	}
 
-	public static function unsignByte(int $value) : int{
+	public static function unsignByte($value) {
 		return $value & 0xff;
 	}
 
-	public static function signShort(int $value) : int{
+	public static function signShort($value) {
 		return $value << 48 >> 48;
 	}
 
-	public static function unsignShort(int $value) : int{
+	public static function unsignShort($value) {
 		return $value & 0xffff;
 	}
 
-	public static function signInt(int $value) : int{
+	public static function signInt($value) {
 		return $value << 32 >> 32;
 	}
 
-	public static function unsignInt(int $value) : int{
+	public static function unsignInt($value) {
 		return $value & 0xffffffff;
 	}
 
 
-	public static function flipShortEndianness(int $value) : int{
+	public static function flipShortEndianness($value) {
 		return self::readLShort(self::writeShort($value));
 	}
 
-	public static function flipIntEndianness(int $value) : int{
+	public static function flipIntEndianness($value) {
 		return self::readLInt(self::writeInt($value));
 	}
 
-	public static function flipLongEndianness(int $value) : int{
+	public static function flipLongEndianness($value) {
 		return self::readLLong(self::writeLong($value));
 	}
 
@@ -93,7 +93,7 @@ class Binary{
 	 *
 	 * @return bool
 	 */
-	public static function readBool(string $b) : bool{
+	public static function readBool($b) {
 		return $b !== "\x00";
 	}
 
@@ -104,7 +104,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeBool(bool $b) : string{
+	public static function writeBool($b) {
 		return $b ? "\x01" : "\x00";
 	}
 
@@ -115,7 +115,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readByte(string $c) : int{
+	public static function readByte($c) {
 		return ord($c[0]);
 	}
 
@@ -126,7 +126,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readSignedByte(string $c) : int{
+	public static function readSignedByte($c) {
 		return self::signByte(ord($c[0]));
 	}
 
@@ -137,7 +137,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeByte(int $c) : string{
+	public static function writeByte($c) {
 		return chr($c);
 	}
 
@@ -148,7 +148,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readShort(string $str) : int{
+	public static function readShort($str) {
 		return unpack("n", $str)[1];
 	}
 
@@ -159,7 +159,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readSignedShort(string $str) : int{
+	public static function readSignedShort($str) {
 		return self::signShort(unpack("n", $str)[1]);
 	}
 
@@ -170,7 +170,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeShort(int $value) : string{
+	public static function writeShort($value) {
 		return pack("n", $value);
 	}
 
@@ -181,7 +181,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readLShort(string $str) : int{
+	public static function readLShort($str) {
 		return unpack("v", $str)[1];
 	}
 
@@ -192,7 +192,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readSignedLShort(string $str) : int{
+	public static function readSignedLShort($str) {
 		return self::signShort(unpack("v", $str)[1]);
 	}
 
@@ -203,7 +203,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLShort(int $value) : string{
+	public static function writeLShort($value) {
 		return pack("v", $value);
 	}
 
@@ -214,7 +214,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readTriad(string $str) : int{
+	public static function readTriad($str) {
 		return unpack("N", "\x00" . $str)[1];
 	}
 
@@ -225,7 +225,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeTriad(int $value) : string{
+	public static function writeTriad($value) {
 		return substr(pack("N", $value), 1);
 	}
 
@@ -236,7 +236,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readLTriad(string $str) : int{
+	public static function readLTriad($str) {
 		return unpack("V", $str . "\x00")[1];
 	}
 
@@ -247,7 +247,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLTriad(int $value) : string{
+	public static function writeLTriad($value) {
 		return substr(pack("V", $value), 0, -1);
 	}
 
@@ -258,7 +258,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readInt(string $str) : int{
+	public static function readInt($str) {
 		return self::signInt(unpack("N", $str)[1]);
 	}
 
@@ -269,7 +269,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeInt(int $value) : string{
+	public static function writeInt($value) {
 		return pack("N", $value);
 	}
 
@@ -280,7 +280,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readLInt(string $str) : int{
+	public static function readLInt($str) {
 		return self::signInt(unpack("V", $str)[1]);
 	}
 
@@ -291,7 +291,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLInt(int $value) : string{
+	public static function writeLInt($value) {
 		return pack("V", $value);
 	}
 
@@ -302,7 +302,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readFloat(string $str) : float{
+	public static function readFloat($str) {
 		return unpack("G", $str)[1];
 	}
 
@@ -314,7 +314,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readRoundedFloat(string $str, int $accuracy) : float{
+	public static function readRoundedFloat($str, $accuracy) {
 		return round(self::readFloat($str), $accuracy);
 	}
 
@@ -325,7 +325,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeFloat(float $value) : string{
+	public static function writeFloat($value) {
 		return pack("G", $value);
 	}
 
@@ -336,7 +336,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readLFloat(string $str) : float{
+	public static function readLFloat($str) {
 		return unpack("g", $str)[1];
 	}
 
@@ -348,7 +348,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readRoundedLFloat(string $str, int $accuracy) : float{
+	public static function readRoundedLFloat($str, $accuracy) {
 		return round(self::readLFloat($str), $accuracy);
 	}
 
@@ -359,7 +359,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLFloat(float $value) : string{
+	public static function writeLFloat($value) {
 		return pack("g", $value);
 	}
 
@@ -370,7 +370,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function printFloat(float $value) : string{
+	public static function printFloat($value) {
 		return preg_replace("/(\\.\\d+?)0+$/", "$1", sprintf("%F", $value));
 	}
 
@@ -381,7 +381,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readDouble(string $str) : float{
+	public static function readDouble($str) {
 		return unpack("E", $str)[1];
 	}
 
@@ -392,7 +392,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeDouble(float $value) : string{
+	public static function writeDouble($value) {
 		return pack("E", $value);
 	}
 
@@ -403,7 +403,7 @@ class Binary{
 	 *
 	 * @return float
 	 */
-	public static function readLDouble(string $str) : float{
+	public static function readLDouble($str) {
 		return unpack("e", $str)[1];
 	}
 
@@ -414,7 +414,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLDouble(float $value) : string{
+	public static function writeLDouble($value) {
 		return pack("e", $value);
 	}
 
@@ -425,7 +425,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readLong(string $str) : int{
+	public static function readLong($str) {
 		return unpack("J", $str)[1];
 	}
 
@@ -436,7 +436,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLong(int $value) : string{
+	public static function writeLong($value) {
 		return pack("J", $value);
 	}
 
@@ -447,7 +447,7 @@ class Binary{
 	 *
 	 * @return int
 	 */
-	public static function readLLong(string $str) : int{
+	public static function readLLong($str) {
 		return unpack("P", $str)[1];
 	}
 
@@ -458,7 +458,7 @@ class Binary{
 	 *
 	 * @return string
 	 */
-	public static function writeLLong(int $value) : string{
+	public static function writeLLong($value) {
 		return pack("P", $value);
 	}
 
