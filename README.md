@@ -5,7 +5,7 @@
 # Links
 | Build | Download | Discord |
 | :---: | :---: | :---: |
-| [![Build Status](https://travis-ci.org/MFDGaming/PocketMine-Steadfast3.svg?branch=master)](https://travis-ci.org/github/MFDGaming/PocketMine-Steadfast3) | [![Download](https://img.shields.io/badge/Download-PHAR-orange?style=plastic)](https://github.com/MFDGaming/PocketMine-Steadfast3/releases/download/v1.3.0/Steadfast3_1.3.0.phar) | [![Discord](https://img.shields.io/badge/Chat-On%20Discord-738BD7.svg?style=plastic&colorB=7289da)](https://discord.gg/fUhjt5n) |
+| [![Build Status](https://travis-ci.org/MFDGaming/PocketMine-Steadfast3.svg?branch=master)](https://travis-ci.org/github/MFDGaming/PocketMine-Steadfast3) | [![Download](https://img.shields.io/badge/Download-PHAR-v1.4.0-orange?style=plastic)](https://github.com/MFDGaming/PocketMine-Steadfast3/releases/download/v1.4.0/Steadfast3_1.4.0.phar) | [![Discord](https://img.shields.io/badge/Chat-On%20Discord-738BD7.svg?style=plastic&colorB=7289da)](https://discord.gg/fUhjt5n) |
 
 ## Introduction
 
