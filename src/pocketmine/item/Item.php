@@ -548,7 +548,6 @@ class Item Implements ItemIds {
         }
 
         self::initCreativeItems();
-        self::initFood();
     }
 
     public static function registerItem($id, $class) {
@@ -694,53 +693,6 @@ class Item Implements ItemIds {
         } 
     }
 
-    private static function addColoredCreativeItem($itemId, $creativeGroup) {
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_WHITE), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_ORANGE), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_MAGENTA), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_LIGHT_BLUE), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_YELLOW), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_LIME), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_PINK), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_GRAY), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_LIGHT_GRAY), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_CYAN), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_PURPLE), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_BLUE), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_BROWN), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_GREEN), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_RED), $creativeGroup);
-        self::addCreativeItem(Item::get($itemId, Block::COLOR_BLACK), $creativeGroup);
-    }
-    
-    private static function initFood(){
-        self::$food[] = Item::COOKIE;
-        self::$food[] = Item::MELON;
-        self::$food[] = Item::RAW_BEEF;
-        self::$food[] = Item::COOKED_BEEF;
-        self::$food[] = Item::RAW_CHICKEN;
-        self::$food[] = Item::COOKED_CHICKEN;
-        self::$food[] = Item::CARROT;
-        self::$food[] = Item::POTATO;
-        self::$food[] = Item::BAKED_POTATO;
-        self::$food[] = Item::PUMPKIN_PIE;
-        self::$food[] = Item::BREAD;
-        self::$food[] = Item::APPLE;
-        self::$food[] = Item::GOLDEN_APPLE;
-        self::$food[] = Item::RAW_FISH;
-        self::$food[] = Item::COOKED_FISH;
-        self::$food[] = Item::RAW_PORKCHOP;
-        self::$food[] = Item::COOKED_PORKCHOP;
-        self::$food[] = Item::RAW_MUTTON;
-        self::$food[] = Item::COOKED_MUTTON;
-        self::$food[] = Item::RAW_RABBIT;
-        self::$food[] = Item::COOKED_RABBIT;
-        self::$food[] = Item::RAW_SALMON;
-        self::$food[] = Item::COOKED_SALMON;
-        self::$food[] = Item::RABBIT_STEW;
-        self::$food[] = Item::CHORUS_FRUIT;
-    }
-
     public static function clearCreativeItems(){
         Item::$creative = [];
     }
@@ -748,13 +700,9 @@ class Item Implements ItemIds {
     public static function getCreativeItems(){
         return Item::$creative;
     }
-    
-    public static function getCreativeGroups(){
-        return Item::$creativeGroupData;
-    }
 
-    public static function addCreativeItem(Item $item, $creativeGroup = self::CREATIVE_GROUP_NONE){
-        Item::$creative[] = ['item' => Item::get($item->getId(), $item->getDamage()), 'group' => $creativeGroup];
+    public static function addCreativeItem(Item $item){
+        Item::$creative[] = ['item' => clone $item];
     }
 
     public static function removeCreativeItem(Item $item){
