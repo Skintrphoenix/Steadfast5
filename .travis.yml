@@ -17,10 +17,8 @@ before_script:
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
- - php ./src/pocketmine/PocketMine.php
- - en
- - y
- - y
+ - cd ./tests
+ - php ../src/pocketmine/PocketMine.php
 
 notifications:
  email: true
