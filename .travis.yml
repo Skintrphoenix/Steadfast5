@@ -18,10 +18,8 @@ before_script:
 
 script:
  - composer install --prefer-dist
- - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
- - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
  - composer install --no-dev --prefer-dist
- - php src/pocketmine/Pocketmine.php
+ - php ./src/pocketmine/Pocketmine.php
 
 cache:
  directories:
