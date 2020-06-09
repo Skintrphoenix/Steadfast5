@@ -3,5 +3,5 @@ description: The plugin for testing
 version: 1.0.0
 author: MFDGaming
 api: 3.0.0
-main: Test
+main: test\Test
 
