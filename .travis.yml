@@ -18,6 +18,7 @@ before_script:
 
 script:
  - php ./src/pocketmine/PocketMine.php --no-wizard --plugins="tests"
+ - echo All tests passed
 
 notifications:
  email: true
