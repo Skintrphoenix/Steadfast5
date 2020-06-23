@@ -1553,5 +1553,9 @@ abstract class Entity extends Location implements Metadatable{
 	public function removeClosedViewer($player) {
 		unset($this->hasSpawned[$player->getId()]);
 	}
+	
+	public function isBreakTool() {
+		return true;
+	}
 
 }
