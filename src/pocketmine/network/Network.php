@@ -278,6 +278,7 @@ class Network {
 			case Info::PROTOCOL_385:
 			case Info::PROTOCOL_386:
 			case Info::PROTOCOL_389:
+			case Info::PROTOCOL_390:
 			case Info::PROTOCOL_392:
 			case Info::PROTOCOL_393:
 			case Info::PROTOCOL_400:
@@ -303,6 +304,7 @@ class Network {
 			case Info::PROTOCOL_400:
 			case Info::PROTOCOL_393:
 			case Info::PROTOCOL_392:
+			case Info::PROTOCOL_390:
 			case Info::PROTOCOL_389:
 			case Info::PROTOCOL_386:
 			case Info::PROTOCOL_385:
