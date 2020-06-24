@@ -729,6 +729,10 @@ class Item Implements ItemIds {
     public static function getCreativeItem($index){
         return isset(Item::$creative[$index]) ? Item::$creative[$index]['item'] : null;
     }
+    
+    public static function getCreativeGroups(){
+		return Item::$creativeGroupData;
+	}
 
     /**
      * @param Item $item
