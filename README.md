@@ -23,7 +23,7 @@
 </div>
 
  - <h3>Todo-list:</h3>
-• [ ] LevelDB <br><br>
+• [ ] LevelDB <br>
 • [ ] And more
  - <h3>Known bugs:</h3>
 • Players don't fall out of the world naturally, you'll want to handle PlayerMoveEvent as needed to kill them.
@@ -38,8 +38,8 @@
  
  -  <h3>Install:</h3>
 1. Follow those [pmmp instructions]( https://pmmp.readthedocs.io/en/rtfd/installation.html).
-2. Replace it with Steadfast 3, don't forget to rename it to `PocketMine-MP`.
-3. Start the server.<br><br>
+2. Replace it with Steadfast 3 (Don't forget to rename it to `PocketMine-MP`).
+3. Start the server.<br>
 Note: If this don't work, ask developer.
 
  -  <h3>Update:</h3>
