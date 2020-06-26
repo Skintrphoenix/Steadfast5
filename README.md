@@ -23,8 +23,8 @@
 </div>
 
  - <h3>Todo-list:</h3>
-• [ ] LevelDB <br>
-• [ ] And more
+• [] LevelDB <br>
+• [] And more
  - <h3>Known bugs:</h3>
 • Players don't fall out of the world naturally, you'll want to handle PlayerMoveEvent as needed to kill them.
 <div align="center">
