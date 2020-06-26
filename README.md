@@ -32,7 +32,7 @@
 </div>
 
  - <h3>Download:</h3>
- 1. Download latest [release](https://github.com/NTT1906/Annihilation/releases) or sucess build.
+ 1. Download latest [release](https://github.com/MFDGaming/PocketMine-Steadfast3/releases) or sucess build.
  2. Upload it to your server folder.
  3. Move to next instruction.
  
