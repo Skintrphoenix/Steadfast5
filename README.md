@@ -23,7 +23,7 @@
 </div>
 
  - <h3>Todo-list:</h3>
-• [ ] LevelDB
+• [ ] LevelDB <br><br>
 • [ ] And more
  - <h3>Known bugs:</h3>
 • Players don't fall out of the world naturally, you'll want to handle PlayerMoveEvent as needed to kill them.
@@ -32,15 +32,16 @@
 </div>
 
  - <h3>Download:</h3>
- 1. Download latest [release](https://github.com/NTT1906/Annihilation/releases) or sucess build
- 2. Upload it to your server folder /plugins/
- 3. Restart the server
+ 1. Download latest [release](https://github.com/NTT1906/Annihilation/releases) or sucess build.
+ 2. Upload it to your server folder.
+ 3. Move to next instruction.
  
  -  <h3>Install:</h3>
 1. Follow those [pmmp instructions]( https://pmmp.readthedocs.io/en/rtfd/installation.html).
-2. Replace it with Steadfast 3, don't forget to rename it to `PocketMine-MP`<br><br>
+2. Replace it with Steadfast 3, don't forget to rename it to `PocketMine-MP`.
+3. Start the server.<br><br>
 Note: If this don't work, ask developer.
 
  -  <h3>Update:</h3>
-1. Check for any newer updates
-2. Follow those above instructions
+1. Check for any newer updates.
+2. Follow those above instructions.
