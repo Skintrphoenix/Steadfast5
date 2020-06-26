@@ -15,7 +15,7 @@
 | :---: | :---: | :---: |
 | [![Build Status](https://travis-ci.org/MFDGaming/PocketMine-Steadfast3.svg?branch=master)](https://travis-ci.org/github/MFDGaming/PocketMine-Steadfast3) | [![Download](https://img.shields.io/badge/Download-PHAR-orange)](https://github.com/MFDGaming/PocketMine-Steadfast3/releases/download/v1.5.0/Steadfast3_1.5.0.phar) | [![Discord](https://img.shields.io/badge/Chat-On%20Discord-738BD7.svg?style=normal&colorB=7289da)](https://discord.gg/fUhjt5n) |
 
-- Steadfast3 is a project for backporting new Minecraft: Bedrock Edition changes to older Pocketmine versions for better stability and performance, while retaining as many features from the new [PocketMine-MP](https://github.com/pmmp/Pocketmine-MP) versions as possible.<br>
+- Steadfast3 is a project that backports new Minecraft: Bedrock Edition versions to older Pocketmine versions for better stability and performance, while retaining as many features from the new [PocketMine-MP](https://github.com/pmmp/Pocketmine-MP) versions as possible.<br>
 - This project was forked from [Steadfast 2]( https://github.com/Hydreon/Steadfast2) by [MFDGaming](https://github.com/MFDGaming).
 
 <div align="center">
