@@ -40,7 +40,7 @@
 1. Follow those [pmmp instructions]( https://pmmp.readthedocs.io/en/rtfd/installation.html).
 2. Replace it with Steadfast 3 (Don't forget to rename it to `PocketMine-MP`).
 3. Start the server.<br>
-Note: If this don't work, ask developer.
+Note: If this does not work, ask developer.
 
  -  <h3>Update:</h3>
 1. Check for any newer updates.
