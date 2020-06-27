@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\Fire;
 use pocketmine\level\Level;
-use pocketmine\level\sound\FuseSound;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use function assert;
@@ -57,20 +56,6 @@ class FlintSteel extends Tool{
 		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
 			assert($level !== null);
 			$level->setBlock($blockReplace, new Fire(), true);
-			
-			$blockReplace = $level->getBlock($blockReplace);
-			
-			if($blockReplace->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $blockReplace->canNeighborBurn()){
-				$level->scheduleUpdate($blockReplace, $blockReplace->getTickRate() + mt_rand(0, 10));
-			}
-			
-			if($player->isSurvival()){
-				$this->useOn($blockReplace, 2);
-				$player->getInventory()->setItemInHand($this);
-			}
-			
-			$this->getLevel()->addSound(new FuseSound($clickVector->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
-
 			return true;
 		}
 
