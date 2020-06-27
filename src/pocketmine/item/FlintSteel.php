@@ -26,8 +26,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\Fire;
 use pocketmine\level\Level;
+use pocketmine\level\sound\FuseSound;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function assert;
 
@@ -54,23 +54,23 @@ class FlintSteel extends Tool{
 		$tz = $blockClicked->getZ();
 		$clickVector = new Vector3($tx, $ty, $tz);
 
-		if($blockReplace->getId() === self::AIR){
+		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
 			assert($level !== null);
 			$level->setBlock($blockReplace, new Fire(), true);
-			$pos = $blockReplace->add(0.5, 0.5, 0.5);
-			$soundId = LevelSoundEventPacket::SOUND_IGNITE;
-			$pk = new LevelSoundEventPacket();
-			$pk->sound = $soundId;
-			$pk->pitch = $pitch;
-			$pitch = 1;
-			$extraData = -1;
-			$unknown = false;
-			$disableRelativeVolume = false;
-			$pk->extraData = $extraData;
-			$pk->unknownBool = $unknown;
-			$pk->disableRelativeVolume = $disableRelativeVolume;
-			list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
-			$level->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+			
+			$blockReplace = $level->getBlock($blockReplace);
+			
+			if($blockReplace->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $blockReplace->canNeighborBurn()){
+				$level->scheduleUpdate($blockReplace, $blockReplace->getTickRate() + mt_rand(0, 10));
+			}
+			
+			if($player->isSurvival()){
+				$this->useOn($blockReplace, 2);
+				$player->getInventory()->setItemInHand($this);
+			}
+			
+			$this->getLevel()->addSound(new FuseSound($clickVector->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
+
 			return true;
 		}
 
