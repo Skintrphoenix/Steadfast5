@@ -53,7 +53,7 @@ class FlintSteel extends Tool{
 		$tz = $blockClicked->getZ();
 		$clickVector = new Vector3($tx, $ty, $tz);
 
-		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
+		if($blockReplace->getId() === self::AIR){
 			assert($level !== null);
 			$level->setBlock($blockReplace, new Fire(), true);
 			return true;
