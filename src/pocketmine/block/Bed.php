@@ -126,7 +126,7 @@ class Bed extends Transparent{
 					new IntTag("x", (int) $this->x),
 					new IntTag("y", (int) $this->y),
 					new IntTag("z", (int) $this->z),
-					new ByteTag("color", (int) 14),
+					new ByteTag("color", $item->getDamage() & 0x0f),
 					new ByteTag("isMovable", (int) 1)
 				]);
 				Tile::createTile("Bed", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
@@ -136,7 +136,7 @@ class Bed extends Transparent{
 					new IntTag("x", (int) $next->x),
 					new IntTag("y", (int) $next->y),
 					new IntTag("z", (int) $next->z),
-					new ByteTag("color", (int) 14),
+					new ByteTag("color", $item->getDamage() & 0x0f),
 					new ByteTag("isMovable", (int) 1)
 				]);
 				Tile::createTile("Bed", $this->getLevel()->getChunk($next->x >> 4, $next->z >> 4), $nbtNext);
