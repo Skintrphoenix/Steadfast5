@@ -33,7 +33,7 @@ use pocketmine\block\LapisOre;
 use pocketmine\block\RedstoneOre;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\format\Chunk;
+use pocketmine\level\format\FullChunk;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\math\Vector3;
