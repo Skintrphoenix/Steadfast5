@@ -42,7 +42,7 @@ use pocketmine\utils\Random;
 class Flat extends Generator{
 	/** @var ChunkManager */
 	private $level;
-	/** @var Chunk */
+	/** @var FullChunk */
 	private $chunk;
 	/** @var Random */
 	private $random;
