@@ -23,10 +23,9 @@ namespace pocketmine\level\generator;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\biome\Biome;
+use pocketmine\level\format\FullChunk;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
-use pocketmine\level\format\FullChunk;
 
 class VoidWorld extends Generator{
 	/** @var ChunkManager */
@@ -36,7 +35,7 @@ class VoidWorld extends Generator{
 	/** @var Random */
 	private $random;
 	private $options;
-	/** @var FullChunk */
+	/** @var Chunk */
 	private $emptyChunk = null;
 
 	public function getSettings(){
