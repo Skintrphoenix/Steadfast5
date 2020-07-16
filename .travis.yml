@@ -2,12 +2,12 @@ language: php
 
 php:
  - 7.3
- - 7.4
 
 before_script:
+ - mkdir plugins
+ - wget -O plugins/DevTools.phar https://github.com/IceCruelStuff/DevTools/releases/latest/download/DevTools.phar
  - phpenv config-rm xdebug.ini
-# - pecl install channel://pecl.php.net/pthreads-3.1.6
- - echo | pecl install channel://pecl.php.net/yaml-2.0.4
+ - echo | pecl install channel://pecl.php.net/yaml-2.1.0
  - git clone https://github.com/pmmp/pthreads.git
  - cd pthreads
  - git checkout 646dac62ae0d48c1ada7b007e15575fb84f7d71d
@@ -19,7 +19,7 @@ before_script:
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
- - php ./src/pocketmine/PocketMine.php --no-wizard -travis
+ - php tests/TravisTest.php
 
 cache:
  directories:
