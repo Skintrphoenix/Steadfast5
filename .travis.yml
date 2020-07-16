@@ -11,7 +11,7 @@ before_script:
  - echo | pecl install channel://pecl.php.net/yaml-2.0.4
  - git clone https://github.com/pmmp/pthreads.git
  - cd pthreads
- - git checkout 1b7da492b944146fa9680f6399bd9c6c6c6095e0
+ - git checkout 646dac62ae0d48c1ada7b007e15575fb84f7d71d
  - phpize
  - ./configure
  - make
@@ -20,11 +20,7 @@ before_script:
  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
- - composer install --prefer-dist
- - ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
- - ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
- - composer install --no-dev --prefer-dist
- - ./tests/travis.sh -t4
+ - php ./src/pocketmine/PocketMine.php --no-wizard -travis
 
 cache:
  directories:
