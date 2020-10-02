@@ -23,7 +23,7 @@ class ShulkerInventory extends ContainerInventory {
 	}
 
 	public function getHolder() {
-		return $this->getHolder;
+		return $this->holder;
 	}
 
 	public function getSize() {

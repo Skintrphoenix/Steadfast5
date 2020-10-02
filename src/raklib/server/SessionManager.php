@@ -214,7 +214,12 @@ class SessionManager{
 			if ($session->isEncryptEnable()) {
 				$buff = $session->getDecrypt($buff);
 			}
-			$decoded = zlib_decode($buff);
+			try {
+				$decoded = zlib_decode($buff, 1024 * 1024 * 2); // 2mb max
+			} catch (\ErrorExecption $e) {
+				// zlib decode error
+				$decoded = "";
+			}
 			$stream = new BinaryStream($decoded);
 			$length = strlen($decoded);
 			static $spamPacket = "\x39\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
@@ -244,7 +249,7 @@ class SessionManager{
 				$buffer = chr(RakLib::PACKET_ENCAPSULATED) . chr(strlen($id)) . $id . $buf;
 				$this->server->pushThreadToMainPacket($buffer);
 			}
-			if ($count > 250) {		
+			if ($count > 250) {
 				$this->blockAddress($source, 30);
 				$this->streamKick($session, "Hack mods are not permitted.");
 			}
