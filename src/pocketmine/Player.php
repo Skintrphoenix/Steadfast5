@@ -1115,7 +1115,19 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
 		}
-		
+
+		$a = [
+			'SET_ENTITY_DATA_PACKET',
+			'UPDATE_ATTRIBUTES_PACKET',
+			'ADVENTURE_SETTINGS_PACKET',
+			'SET_TIME_PACKET'
+		];
+
+		if (in_array($packet->pname(), $a)) {
+			return;
+		}
+
+		var_dump($packet->pname() . " " . __FILE__. ": " . __LINE__);
 		switch($packet->pname()){
 			case 'INVENTORY_CONTENT_PACKET':
 				$queueKey = $packet->pname() . $packet->inventoryID;
@@ -1214,6 +1226,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	}
 
 	public function addBufferToPacketQueue($buffer) {
+		return;
 		if($this->connected === false){
 			return false;
 		}
@@ -1224,8 +1237,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		if (count($this->packetQueue) <= 0 && count($this->inventoryPacketQueue) <= 0) {
 			return;
 		}
+		// for debug
+		var_dump('to client');
 		$buffer = '';
 		foreach ($this->packetQueue as $pkBuf) {
+			// for debug
+			var_dump(ord($pkBuf{0}));
+		    if (strlen($pkBuf) > 1000) {
+				var_dump(strlen($pkBuf));
+			} else {
+				var_dump($pkBuf);
+			}
 			$buffer .= Binary::writeVarInt(strlen($pkBuf)) . $pkBuf;
 		}
 		foreach ($this->inventoryPacketQueue as $pk) {
@@ -1254,6 +1276,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return false;
 		}
 
+		var_dump($packet->pname() . " " . __FILE__ . ": " . __LINE__);
 		if ($this->subClientId > 0 && $this->parent != null) {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
@@ -1769,7 +1792,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::BEETROOT => ['food' => 1, 'saturation' => 1.2],
 		Item::BEETROOT_SOUP => ['food' => 6, 'saturation' => 7.2],
 		Item::BREAD => ['food' => 5, 'saturation' => 6],
-		/** @todo cake slice and whole */
+		/** @TODO: cake slice and whole */
 		Item::CARROT => ['food' => 3, 'saturation' => 3.6],
 		Item::CHORUS_FRUIT => ['food' => 4, 'saturation' => 2.4],
 		Item::COOKED_CHICKEN => ['food' => 6, 'saturation' => 7.2],
@@ -1779,7 +1802,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::COOKED_RABBIT => ['food' => 5, 'saturation' => 6],
 		Item::COOKED_SALMON => ['food' => 6, 'saturation' => 9.6],
 		Item::COOKIE => ['food' => 2, 'saturation' => 0.4],
-		//Item::GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
+//		Item::GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
+//		Item::ENCHANTNED_GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
 		Item::GOLDEN_CARROT => ['food' => 6, 'saturation' => 14.4],
 		Item::MELON => ['food' => 2, 'saturation' => 1.2],
 		Item::MUSHROOM_STEW => ['food' => 6, 'saturation' => 7.2],
@@ -1789,6 +1813,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::RABBIT_STEW => ['food' => 10, 'saturation' => 12],
 		Item::RAW_BEEF => ['food' => 3, 'saturation' => 1.8],
 		Item::RAW_CHICKEN => ['food' => 2, 'saturation' => 1.2],
+		// TODO: rewrite fish
 		Item::RAW_FISH => [
 			0 => ['food' => 2, 'saturation' => 0.4], // raw fish
 			1 => ['food' => 2, 'saturation' => 0.4], // raw salmon
@@ -1893,6 +1918,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return;
 		}
 
+		var_dump("----- " . $packet->pname() . " " . __FILE__. ": " . __LINE__);
 		switch($packet->pname()){
 			case 'ITEM_FRAME_DROP_ITEM_PACKET':
 				$tile = null;
@@ -3392,6 +3418,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	}
 
 	public function completeLogin() {
+		debug_print_backtrace(5, 5);
 		if ($this->loginCompleted) {
 			return;
 		}
