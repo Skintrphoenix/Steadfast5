@@ -23,7 +23,7 @@ namespace pocketmine\block;
 
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
-use pocketmine\item\Armour;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\Potion;
 use pocketmine\item\Tool;
