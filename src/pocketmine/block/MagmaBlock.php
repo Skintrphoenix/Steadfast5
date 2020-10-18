@@ -9,7 +9,7 @@ class MagmaBlock extends Solid {
 	protected $id = self::MAGMA;
 
 	public function __construct() {
-		
+
 	}
 
 	public function getHardness() {

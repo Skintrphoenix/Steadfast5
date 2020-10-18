@@ -525,8 +525,8 @@ class CraftingManager{
 		
 		// other
 		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::DYE, 2, 1), Item::get(Item::CACTUS, 0, 1)));
-		// @todo sponge
-		// @todo popped chorus fruit
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::SPONGE, 0, 1), Item::get(Item::SPONGE, 1, 1)));
+		$this->registerRecipe(new FurnaceRecipe(Item::get(Item::POPPED_CHORUS_FRUIT, 0, 1), Item::get(Item::CHORUS_FRUIT, 0, 1)));
 	}
 
 	protected function registerStonecutter(){	
@@ -586,7 +586,7 @@ class CraftingManager{
 			[Item::STONE_SLAB2,         Slab2::MOSSY_COBBLESTONE,   Item::MOSSY_STONE,          0,                  "slab",             6],
 			[Item::STONE_SLAB2,         Slab2::SMOOTH_SANDSTONE,    Item::SANDSTONE,            Sandstone::SMOOTH,  "slab",             6],
 			[Item::STONE_SLAB2,         Slab2::RED_NETHER_BRICK,    Item::RED_NETHER_BRICK,     0,                  "slab",             6],
-			[Item::COBBLESTONE_STAIRS,  0,                          Item::COBBLESTONE,          0,                  "stairs",           4],
+			[Item::COBBLESTONE_STAIRS,  0,                          Item::COBBLESTONE,			0,                  "stairs",           4],
 			[Item::SANDSTONE_STAIRS,    0,                          Item::SANDSTONE,            0,                  "stairs",           4],
 			[Item::RED_SANDSTONE_STAIRS,    0,                      Item::RED_SANDSTONE,        0,                  "stairs",           4],
 			[Item::STONE_BRICK_STAIRS,  0,                          Item::STONE_BRICK,          StoneBricks::NORMAL,"stairs",           4],

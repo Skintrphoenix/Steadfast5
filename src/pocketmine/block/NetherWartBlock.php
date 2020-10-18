@@ -7,7 +7,7 @@ class NetherWartBlock extends Solid {
 	protected $id = self::NETHER_WART_BLOCK_BLOCK;
 
 	public function __construct() {
-		
+
 	}
 
 	public function getHardness() {

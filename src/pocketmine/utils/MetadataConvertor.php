@@ -42,6 +42,7 @@ class MetadataConvertor {
 		'DATA_FLAG_STACKABLE' => 36,
 		'DATA_FLAG_IS_WASD_CONTROLLED' => 43,
 		'DATA_FLAG_CAN_POWER_JUMP' => 44,
+		'DATA_FLAG_LINGER' => 45,
 		'DATA_FLAG_HAS_COLLISION' => 46,
 		'DATA_FLAG_AFFECTED_BY_GRAVITY' => 47,
 		'DATA_FLAG_FIRE_IMMUNE' => 48,
@@ -63,6 +64,7 @@ class MetadataConvertor {
 		'DATA_FLAG_STACKABLE' => 37,
 		'DATA_FLAG_IS_WASD_CONTROLLED' => 44,
 		'DATA_FLAG_CAN_POWER_JUMP' => 45,
+		'DATA_FLAG_LINGER' => 46,
 		'DATA_FLAG_HAS_COLLISION' => 47,
 		'DATA_FLAG_AFFECTED_BY_GRAVITY' => 48,
 		'DATA_FLAG_FIRE_IMMUNE' => 49,
@@ -217,9 +219,14 @@ class MetadataConvertor {
 
 	private static function updateMetaIds($meta, $protocol) {
 		switch ($protocol) {
-            case Info::PROTOCOL_408:
-            case Info::PROTOCOL_407:
-            case Info::PROTOCOL_406:
+			case Info::PROTOCOL_413:
+			case Info::PROTOCOL_412:
+			case Info::PROTOCOL_411:
+			case Info::PROTOCOL_410:
+			case Info::PROTOCOL_409:
+			case Info::PROTOCOL_408:
+			case Info::PROTOCOL_407:
+			case Info::PROTOCOL_406:
 			case Info::PROTOCOL_400:
 			case Info::PROTOCOL_393:
 			case Info::PROTOCOL_392:
@@ -283,9 +290,14 @@ class MetadataConvertor {
 			return $meta;
 		}
 		switch ($protocol) {
-            case Info::PROTOCOL_408:
-            case Info::PROTOCOL_407:
-            case Info::PROTOCOL_406:
+			case Info::PROTOCOL_413:
+			case Info::PROTOCOL_412:
+			case Info::PROTOCOL_411:
+			case Info::PROTOCOL_410:
+			case Info::PROTOCOL_409:
+			case Info::PROTOCOL_408:
+			case Info::PROTOCOL_407:
+			case Info::PROTOCOL_406:
 			case Info::PROTOCOL_400:
 			case Info::PROTOCOL_393:
 			case Info::PROTOCOL_392:

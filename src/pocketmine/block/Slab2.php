@@ -8,7 +8,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 
 class Slab2 extends Transparent{
-	
+
 	const RED_SANDSTONE = 0;
 	const PURPUR = 1;
 	const PRISMARINE = 2;
@@ -17,7 +17,8 @@ class Slab2 extends Transparent{
 	const MOSSY_COBBLESTONE = 5;
 	const SMOOTH_SANDSTONE = 6;
 	const RED_NETHER_BRICK = 7;
-	
+
+
 	protected $id = self::STONE_SLAB2;
 
 	public function __construct($meta = 0){

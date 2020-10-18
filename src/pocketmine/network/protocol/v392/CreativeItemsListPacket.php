@@ -10,13 +10,13 @@ class CreativeItemsListPacket extends PEPacket {
 
 	const NETWORK_ID = Info331::CREATIVE_ITEMS_LIST_PACKET;
 	const PACKET_NAME = "CREATIVE_ITEMS_LIST_PACKET";
-	
+
 
 	public $groups;
 	public $items;
 
 	public function decode($playerProtocol) {
-		
+
 	}
 
 	public function encode($playerProtocol) {

@@ -6,7 +6,7 @@ class ChangeDimensionPacket extends PEPacket {
 
 	const NETWORK_ID = Info::CHANGE_DIMENSION_PACKET;
 	const PACKET_NAME = "CHANGE_DIMENSION_PACKET";
-	
+
 	const OVERWORLD = 0;
 	const NETHER = 1;
 	const END = 2;

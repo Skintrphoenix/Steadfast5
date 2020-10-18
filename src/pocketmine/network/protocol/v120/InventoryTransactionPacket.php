@@ -62,11 +62,11 @@ class InventoryTransactionPacket extends PEPacket {
 					}
 				}
 			}
-		}	
+		}
 		$this->transactionType = $this->getVarInt();
 		if ($playerProtocol >= Info::PROTOCOL_393) {
 			$this->getByte();
-		}		
+		}
 		$this->transactions = $this->getTransactions($playerProtocol);
 		$this->getComplexTransactions($playerProtocol);
 	}

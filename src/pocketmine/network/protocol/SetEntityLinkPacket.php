@@ -45,10 +45,10 @@ class SetEntityLinkPacket extends PEPacket{
 		$this->putVarInt($this->from);
 		$this->putVarInt($this->to);
 		$this->putByte($this->type);
-		$this->putByte(0); //immediate 
+		$this->putByte(0); //immediate
 		if ($playerProtocol >= Info::PROTOCOL_406) {
-			$this->putByte(0);//whether the link was changes by the rider
-		}	
+			$this->putByte(0); // whether the link was changes by the rider
+		}
 	}
 
 }

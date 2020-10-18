@@ -55,6 +55,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\protocol\MobEffectPacket;
+use pocketmine\network\protocol\PlaySoundPacket;
 use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\network\protocol\SetEntityDataPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -145,6 +146,7 @@ abstract class Entity extends Location implements Metadatable{
 	const DATA_FLAG_ALWAYS_SHOW_NAMETAG = 15;
 	const DATA_FLAG_NOT_MOVE = 16;
 	const DATA_FLAG_NO_AI = 16;
+	const DATA_FLAG_IMMOBILE = 16;
 	const DATA_FLAG_SILENT = 17;
 	const DATA_FLAG_IS_CLIMBING = 18;
 	const DATA_FLAG_RESTING_BAT = 19;
@@ -170,6 +172,7 @@ abstract class Entity extends Location implements Metadatable{
 	 */
 	const DATA_FLAG_IS_WASD_CONTROLLED = 42; 
 	const DATA_FLAG_CAN_POWER_JUMP = 43;
+	const DATA_FLAG_LINGER = 44;
 	const DATA_FLAG_HAS_COLLISION = 45;
 	const DATA_FLAG_AFFECTED_BY_GRAVITY = 46;
 	const DATA_FLAG_FIRE_IMMUNE = 47;
@@ -387,6 +390,35 @@ abstract class Entity extends Location implements Metadatable{
 		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_SHOW_NAMETAG, $value ? true : false);
 //		$this->setDataProperty(self::DATA_SHOW_NAMETAG, self::DATA_TYPE_BYTE, $value ? 1 : 0);
 	}
+
+
+    /**
+     * @param bool $value
+     */
+    public function setImmobile($value = true){
+        $this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_IMMOBILE, $value ? true : false);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isImmobile(): bool {
+        return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE);
+    }
+
+    /**
+     * @param bool $value
+     */
+    public function setInvisible($value = true){
+        $this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, $value ? true : false);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInvisible(): bool {
+        return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_INVISIBLE);
+    }
 
 	public function isSneaking(){
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING);
@@ -722,7 +754,25 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->setLastDamageCause($source);
 
-		$this->setHealth($this->getHealth() - $source->getFinalDamage());
+		if ($this instanceof Player) {
+		    if ($this->getAbsorption() != 0.0) {
+                if ($source->getFinalDamage() > $this->getAbsorption()) {
+                    $damage = $source->getFinalDamage() - $this->getAbsorption();
+
+                    $this->setAbsorption(0.0);
+
+                    $this->setHealth($this->getHealth() - $damage);
+                } else if ($source->getFinalDamage() == $this->getAbsorption()) {
+                    $this->setAbsorption(0.0);
+                } else {
+                    $this->setAbsorption($this->getAbsorption() - $source->getFinalDamage());
+                }
+            } else {
+                $this->setHealth($this->getHealth() - $source->getFinalDamage());
+            }
+        } else {
+            $this->setHealth($this->getHealth() - $source->getFinalDamage());
+        }
 	}
 
 	/**
@@ -925,6 +975,7 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	protected function updateMovement(){
+		$this->setImmobile($this->motion->x == 0 and $this->motion->y == 0 and $this->motion->z == 0);
 		$diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
 		$diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 		if($diffPosition > 0.04 || $diffRotation > 2.25){ 
@@ -1507,6 +1558,6 @@ abstract class Entity extends Location implements Metadatable{
 
 	public function isBreakTool() {
 		return true;
-	} 
+	}
 
 }

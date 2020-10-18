@@ -72,9 +72,9 @@ namespace pocketmine {
 	use pocketmine\utils\Utils;
 	use pocketmine\wizard\Installer;
 
-	const VERSION = '1.5.1-hybrid';
+	const VERSION = '1.8.3';
 	const API_VERSION = "1.12.0";
-	const CODENAME = "刀 (Katana)";
+	const CODENAME = "Server";
 	const MINECRAFT_VERSION = "v1.x";
 	const MINECRAFT_VERSION_NETWORK = "1.2";
 
@@ -87,12 +87,12 @@ namespace pocketmine {
 
 	if(\Phar::running(true) !== ""){
 		@define("pocketmine\\PATH", \Phar::running(true) . "/");
-	}else{
+	} else {
 		@define("pocketmine\\PATH", getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	if(version_compare("7.0", PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= 7.0" . PHP_EOL;
+	if(version_compare("7.3", PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= 7.3" . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -129,6 +129,8 @@ namespace pocketmine {
 	ini_set("memory_limit", -1);
 	define("pocketmine\\START_TIME", microtime(true));
 
+    define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
+
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define("pocketmine\\DATA", isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : getcwd() . DIRECTORY_SEPARATOR);
@@ -151,7 +153,7 @@ namespace pocketmine {
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
-		}else{
+		} else {
 			//If system timezone detection fails or timezone is an invalid value.
 			if($response = Utils::getURL("http://ip-api.com/json")
 				and $ip_geolocation_data = json_decode($response, true)
@@ -160,13 +162,13 @@ namespace pocketmine {
 			){
 				//Again, for redundancy.
 				ini_set("date.timezone", $ip_geolocation_data['timezone']);
-			}else{
+			} else {
 				ini_set("date.timezone", "UTC");
 				date_default_timezone_set("UTC");
 				$logger->warning("Timezone could not be automatically determined. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 			}
 		}
-	}else{
+	} else {
 		/*
 		 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
 		 * an incorrect timezone abbreviation in php.ini apparently.
@@ -271,11 +273,11 @@ namespace pocketmine {
 		if(strpos($offset, '-') !== false){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
-		}else{
+		} else {
 			if(strpos($offset, '+') !== false){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
-			}else{
+			} else {
 				return false;
 			}
 		}
@@ -306,7 +308,7 @@ namespace pocketmine {
 		if(function_exists("profiler_enable")){
 			\profiler_enable();
 			$logger->notice("Execution is being profiled");
-		}else{
+		} else {
 			$logger->notice("No profiler found. Please install https://github.com/krakjoe/profiler");
 		}
 	}
@@ -345,7 +347,7 @@ namespace pocketmine {
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){
 				$trace = array_reverse(xdebug_get_function_stack());
-			}else{
+			} else {
 				$e = new \Exception();
 				$trace = $e->getTrace();
 			}
@@ -358,7 +360,7 @@ namespace pocketmine {
 			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
 				if(isset($trace[$i]["args"])){
 					$args = $trace[$i]["args"];
-				}else{
+				} else {
 					$args = $trace[$i]["params"];
 				}
 				foreach($args as $name => $value){
@@ -404,7 +406,7 @@ namespace pocketmine {
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
 			$logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
 			++$errors;
-		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
+		} elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
 			$logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
 			++$errors;
 		}
@@ -439,7 +441,7 @@ namespace pocketmine {
 
 	if(file_exists(\pocketmine\PATH . ".git/refs/heads/master")){ //Found Git information!
 		define("pocketmine\\GIT_COMMIT", strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
-	}else{ //Unknown :(
+	} else { //Unknown :(
 		define("pocketmine\\GIT_COMMIT", str_repeat("00", 20));
 	}
 
@@ -452,7 +454,7 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged PocketMine-Steadfast installation detected, do not use on production.");
+		$logger->warning("Non-packaged Steadfast5 installation detected, do not use on production.");
 	}
 
 	ThreadManager::init();

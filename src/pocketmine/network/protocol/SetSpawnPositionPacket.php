@@ -47,8 +47,8 @@ class SetSpawnPositionPacket extends PEPacket{
 		$this->putSignedVarInt($this->x);
 		$this->putVarInt($this->y);
 		$this->putSignedVarInt($this->z);
-		if ($playerProtocol >= Info::PROTOCOL_406){
-			$this->putVarInt(0); //Dimension type
+		if ($playerProtocol >= Info::PROTOCOL_406) {
+			$this->putVarInt(0); // dimension type
 			$this->putSignedVarInt($this->x);
 			$this->putVarInt($this->y);
 			$this->putSignedVarInt($this->z);

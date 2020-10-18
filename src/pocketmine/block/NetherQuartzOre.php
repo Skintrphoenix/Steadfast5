@@ -10,7 +10,7 @@ class NetherQuartzOre extends Solid {
 	protected $id = self::NETHER_QUARTZ_ORE;
 
 	public function __construct() {
-		
+
 	}
 
 	public function getHardness() {

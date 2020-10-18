@@ -13,7 +13,10 @@ pocketmine.yml
 pocketmine-soft.yml
 server.properties
 white-list.txt
+server.log
 start.sh
 mods/
 launcher.sh
 checker.sh
+start.cmd
+start.ps1

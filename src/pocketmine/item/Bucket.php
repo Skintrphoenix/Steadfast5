@@ -50,7 +50,7 @@ class Bucket extends Item {
 		return true;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz) {
 		if ($block instanceof Slab || $block instanceof Slab2 || $block instanceof WoodSlab) {
 			return false;
 		}
@@ -64,7 +64,7 @@ class Bucket extends Item {
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if (!$ev->isCancelled()) {
 					$player->getLevel()->setBlock($target, new Air(), true, true);
-					if($player->isSurvival()){
+					if ($player->isSurvival()) {
 						if ($this->count <= 1) {
 							$player->getInventory()->setItemInHand($ev->getItem(), $player);
 						} else {

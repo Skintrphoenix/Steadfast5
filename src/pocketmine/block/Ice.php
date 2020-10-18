@@ -22,13 +22,14 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Tool;
+use pocketmine\item\Item;
 
 class Ice extends Transparent{
 
 	protected $id = self::ICE;
 
-	public function __construct(){
-
+	public function __construct($meta = 0){
+		$this->meta = $meta;
 	}
 
 	public function getName(){
@@ -41,6 +42,13 @@ class Ice extends Transparent{
 
 	public function getToolType(){
 		return Tool::TYPE_PICKAXE;
+	}
+	
+	public function onBreak(Item $item, Player $player = null) {
+		if (($player === null || $player->isSurvival()) && !$item->hasEnchantment(Enchantment::TYPE_MINING_SILK_TOUCH)) {
+			return $this->getLevel()->setBlock($this, Block::get(Block::WATER), true);
+		}
+		return parent::onBreak($item, $player);
 	}
 
 }

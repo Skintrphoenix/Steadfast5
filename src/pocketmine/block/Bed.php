@@ -22,16 +22,19 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\level\Explosion;
+use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\Player;
-use pocketmine\utils\TextFormat;
-use pocketmine\tile\Tile;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\tile\Tile;
+use pocketmine\utils\TextFormat;
+use pocketmine\Player;
 
-class Bed extends Transparent{
+
+class Bed extends Transparent {
 	
 	const NIGHT_START = 16000;
 	const NIGHT_END = 29000;
@@ -67,10 +70,17 @@ class Bed extends Transparent{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		return false;
+		$dimension = $this->getLevel()->getDimension();
+		if ($dimension == Level::DIMENSION_NETHER) {
+			$explosion = new Explosion($this, 6, $this);
+			$explosion->explodeA();
+			return true;
+		}
+
 		$time = $this->getLevel()->getTime() % self::FULL_DAY;
 
 		$isNight = ($time >= self::NIGHT_START and $time < self::NIGHT_END);
+
 		if($player instanceof Player and !$isNight){
 			$player->sendMessage(TextFormat::GRAY . "You can only sleep at night");
 			return true;
@@ -178,6 +188,7 @@ class Bed extends Transparent{
 				$this->getLevel()->setBlock($blockWest, new Air(), true, true);
 			}
 		}
+
 		$this->getLevel()->setBlock($this, new Air(), true, true);
 
 		return true;

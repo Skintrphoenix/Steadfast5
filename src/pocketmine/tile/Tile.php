@@ -48,6 +48,7 @@ abstract class Tile extends Position{
 	const BED = "Bed";
 	const CAULDRON = "Cauldron";
 	const PISTON_ARM = "PistonArm";
+	const SHULKER_BOX = "ShulkerBox";
 	const DISPENSER = "Dispenser";
 	const ITEM_FRAME = "ItemFrame";
 	const DROPPER = "Dropper";
@@ -95,12 +96,12 @@ abstract class Tile extends Position{
 		return null;
 	}
 
-	/**
-	 * @param $className
-	 *
-	 * @return bool
-	 */
-	public static function registerTile($className){
+    /**
+     * @param $className
+     * @return bool
+     * @throws \ReflectionException
+     */
+    public static function registerTile($className){
 		$class = new \ReflectionClass($className);
 		if(is_a($className, Tile::class, true) and !$class->isAbstract()){
 			self::$knownTiles[$class->getShortName()] = $className;

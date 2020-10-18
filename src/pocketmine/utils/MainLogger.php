@@ -40,11 +40,14 @@ class MainLogger extends \AttachableThreadedLogger{
 	 *
 	 * @throws \RuntimeException
 	 */
-	public function __construct($logFile, $logDebug = false){
+	public function __construct($logFile, $logDebug = true){
 		if(static::$logger instanceof MainLogger){
 			throw new \RuntimeException("MainLogger has been already created");
 		}
 		static::$logger = $this;
+		touch($logFile);
+		$this->logFile = $logFile;
+		$this->logDebug = (bool) $logDebug;
 		$this->logStream = new \Threaded;
 		$this->start();
 	}
@@ -81,7 +84,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	}
 
 	public function info($message){
-		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::WHITE);
+		$this->send($message, \LogLevel::INFO, "INFO", TextFormat::AQUA);
 	}
 
 	public function debug($message){
@@ -127,7 +130,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		];
 		if($errno === 0){
 			$type = LogLevel::CRITICAL;
-		}else{
+		} else {
 			$type = ($errno === E_ERROR or $errno === E_USER_ERROR) ? LogLevel::ERROR : (($errno === E_USER_WARNING or $errno === E_WARNING) ? LogLevel::WARNING : LogLevel::NOTICE);
 		}
 		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
@@ -180,18 +183,18 @@ class MainLogger extends \AttachableThreadedLogger{
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
 			$threadName = "Server thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
+		} elseif($thread instanceof Thread or $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
-		}else{
+		} else {
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] ". TextFormat::RESET . $color ."[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
+		$message = TextFormat::toANSI(TextFormat::GOLD . "[" . date("H:i:s", $now) . "] ". TextFormat::RESET . TextFormat::GREEN ."[" . $threadName . "/" . $prefix . "]:" . TextFormat::RESET . $color . " " . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){
 			echo $cleanMessage . PHP_EOL;
-		}else{
+		} else {
 			echo $message . PHP_EOL;
 		}
 
@@ -209,5 +212,27 @@ class MainLogger extends \AttachableThreadedLogger{
 
 	public function run(){
 		$this->shutdown = false;
+		$this->logResource = fopen($this->logFile, "a+b");
+		if(!is_resource($this->logResource)){
+			throw new \RuntimeException("Couldn't open log file");
+		}
+		
+		while($this->shutdown === false){
+			$this->synchronized(function(){
+				while($this->logStream->count() > 0){
+					$chunk = $this->logStream->shift();
+					fwrite($this->logResource, $chunk);
+				}
+				$this->wait(25000);
+			});
+		}
+		
+		if($this->logStream->count() > 0){
+			while($this->logStream->count() > 0){
+				$chunk = $this->logStream->shift();
+				fwrite($this->logResource, $chunk);
+			}
+		}
+		fclose($this->logResource);
 	}
 }

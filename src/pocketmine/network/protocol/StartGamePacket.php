@@ -77,10 +77,10 @@ class StartGamePacket extends PEPacket{
 			$this->putString('');
 		}
 		if ($playerProtocol >= Info::PROTOCOL_406) {
-			$this->putShort(0); //SpawnSettingsType			
-			$this->putString(''); //User Difined Biome type
+			$this->putShort(0); // SpawnSettingsType
+			$this->putString(''); // User Difined Biome type
 		}
-	
+
 		$this->putSignedVarInt($this->dimension);
 		
 		$this->putSignedVarInt($this->generator);
@@ -104,6 +104,14 @@ class StartGamePacket extends PEPacket{
 
 		if ($playerProtocol >= Info::PROTOCOL_406) {
 			$this->putSignedVarInt(0); //edu edition offer
+		}
+		
+		if ($playerProtocol == Info::PROTOCOL_400) {
+			$this->putByte(0);
+		}
+
+		if ($playerProtocol >= Info::PROTOCOL_406) {
+			$this->putSignedVarInt(0); // edu edition offer
 		}
 		
 		$this->putByte(0); //edu mode
@@ -130,18 +138,18 @@ class StartGamePacket extends PEPacket{
 			$this->putSignedVarInt(self::BROADCAST_SETTINGS_FRIENDS_OF_FRIENDS); // XBox Live Broadcast setting
 			if ($playerProtocol < Info::PROTOCOL_406) {
 				$this->putSignedVarInt(self::BROADCAST_SETTINGS_FRIENDS_OF_FRIENDS); // Platform Broadcast setting
-			}	
+			}
 		} else {
 			$this->putByte(1); // Broadcast to XBL?
 		}
 		
 		if ($playerProtocol >= Info::PROTOCOL_392 && $playerProtocol < Info::PROTOCOL_400) {
-		 	$this->putByte(0); // unknown
+			$this->putByte(0); // unknown
 		}
-				
-		$this->putByte(1);	// commands enabled
 		
-		$this->putByte(0); // isTexturepacksRequired 1x Byte		
+		$this->putByte(1);	// commands enabled
+
+		$this->putByte(0); // isTexturepacksRequired 1x Byte
 		
 		$this->putVarInt(count(self::$defaultRules)); // rules count
 		foreach (self::$defaultRules as $rule) {
@@ -199,18 +207,18 @@ class StartGamePacket extends PEPacket{
 			}
 		}		
 		if ($playerProtocol >= Info::PROTOCOL_392) {
-			$this->putLInt(16); //Limited word width
-			$this->putLInt(16); //Limited word depth			
+			$this->putLInt(16); // limited word width
+			$this->putLInt(16); // limited word width
 		}
 
 		if ($playerProtocol >= Info::PROTOCOL_400) {
-			$this->putByte(0); //Nether type
+			$this->putByte(0); // nether type
 		}
 
 		if ($playerProtocol >= Info::PROTOCOL_407) {
-			$this->putByte(0); //exp gameplay
+			$this->putByte(0); // exp gameplay
 		}
-		
+
 		// level settings end
 		$this->putString('3138ee93-4a4a-479b-8dca-65ca5399e075'); // level id (random UUID)
 		$this->putString(''); // level name

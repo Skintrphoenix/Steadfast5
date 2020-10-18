@@ -8,9 +8,11 @@ use pocketmine\network\protocol\Info;
 use pocketmine\Player;
 
 class BinaryStream {
-	
-	private $offset;
-	private $buffer;
+
+    private $offset = 0;
+    public $buffer = "";
+
+	protected $deviceId = Player::OS_UNKNOWN;
 
 	protected $deviceId = Player::OS_UNKNOWN;
 
@@ -51,8 +53,14 @@ class BinaryStream {
 	}
 
 	public function reset() {
-		$this->setBuffer();
-	}
+        $this->buffer = "";
+        $this->offset = 0;
+    }
+
+    public function rewind()
+    {
+        $this->offset = 0;
+    }
 
 	public function setBuffer($buffer = "", $offset = 0) {
 		$this->buffer = $buffer;
@@ -72,17 +80,31 @@ class BinaryStream {
 	}
 
 	public function get($len) {
-		if ($len < 0) {
-			$this->offset = strlen($this->buffer) - 1;
-			return "";
-		} else if ($len === true) {
-			return substr($this->buffer, $this->offset);
-		}
-		if (strlen($this->buffer) < $this->offset + $len) {
-			throw new \Exception('binary stream get error');
-		}
-		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
+        if($len === 0){
+            return "";
+        }
+
+        $buflen = strlen($this->buffer);
+        if($len === true){
+            $str = substr($this->buffer, $this->offset);
+            $this->offset = $buflen;
+            return $str;
+        }
+        if($len < 0){
+            $this->offset = $buflen - 1;
+            return "";
+        }
+        $remaining = $buflen - $this->offset;
+        if($remaining < $len){
+            throw new \Exception("Not enough bytes left in buffer: need $len, have $remaining");
+        }
+
+        return $len === 1 ? $this->buffer[$this->offset++] : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
+
+    public function getBool() : bool{
+        return $this->get(1) !== "\x00";
+    }
 
 	public function put($str) {
 		$this->buffer .= $str;
@@ -209,6 +231,15 @@ class BinaryStream {
 		$this->putLInt($uuid->getPart(2));
 	}
 
+    public function getRemaining() : string{
+        $str = substr($this->buffer, $this->offset);
+        if($str === false){
+            throw new \Exception("No bytes left to read");
+        }
+        $this->offset = strlen($this->buffer);
+        return $str;
+    }
+
 	public function getSlot($playerProtocol) {
 		$id = $this->getSignedVarInt();
 		if ($id == 0) {
@@ -273,8 +304,46 @@ class BinaryStream {
 		}
 	}
 
+	public function getBlockPosition(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getUnsignedVarInt();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockPosition($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putUnsignedVarInt($y);
+		$this->putVarInt($z);
+	}
+
+	public function getBlockCoords(&$x, &$y, &$z){
+		$x = $this->getVarInt();
+		$y = $this->getUnsignedVarInt();
+		$z = $this->getVarInt();
+	}
+
+	public function putBlockCoords($x, $y, $z){
+		$this->putVarInt($x);
+		$this->putUnsignedVarInt($y);
+		$this->putVarInt($z);
+	}
+
 	public function feof() {
 		return !isset($this->buffer{$this->offset});
+	}
+
+/**
+	 * Reads an unsigned varint from the stream.
+	 */
+	public function getUnsignedVarInt(){
+		return Binary::readUnsignedVarInt($this);
+	}
+
+	/**
+	 * Writes an unsigned varint to the stream.
+	 */
+	public function putUnsignedVarInt($v){
+		$this->put(Binary::writeUnsignedVarInt($v));
 	}
 	
 	
@@ -294,7 +363,8 @@ class BinaryStream {
 			$byte = $this->getByte();
 			$result |= ($byte & 0x7f) << $shift;
 			$shift += 7;
-		} while ($byte > 0x7f);
+		}
+		while ($byte > 0x7f);
 		return $result;
 	}
 
@@ -318,10 +388,9 @@ class BinaryStream {
 		$this->putVarInt(strlen($v));
 		$this->put($v);
 	}
-	
+
 
 	public function putSerializedSkin($playerProtocol, $skinId, $skinData, $skinGeomtryName, $skinGeomtryData, $capeData, $additionalSkinData) {
-		
 		if ($this->deviceId == Player::OS_NX || !isset($additionalSkinData['PersonaSkin']) || !$additionalSkinData['PersonaSkin']) {
 			$additionalSkinData = [];
 		}
@@ -366,7 +435,7 @@ class BinaryStream {
 		} else {
 			$this->putLInt(0);
 		}
-			
+
 		if (empty($capeData)) {
 			$this->putLInt(0);
 			$this->putLInt(0);
@@ -400,7 +469,7 @@ class BinaryStream {
 			$this->putString($additionalSkinData['FullSkinId']); // Full Skin ID	
 		} else {
 			$uniqId = $skinId . $skinGeomtryName . "-" . microtime(true);
-			$this->putString($uniqId); // Full Skin ID	
+			$this->putString($uniqId); // Full Skin ID
 		}
 		if ($playerProtocol == Info::PROTOCOL_390 || $playerProtocol >= Info::PROTOCOL_406) {
 			$this->putString($additionalSkinData['ArmSize']??''); //ArmSize
@@ -429,7 +498,7 @@ class BinaryStream {
 		$additionalSkinData['SkinResourcePatch'] = $this->getString();
 		$geometryData = json_decode($additionalSkinData['SkinResourcePatch'], true);
 		$skinGeomtryName = isset($geometryData['geometry']['default']) ? $geometryData['geometry']['default'] : '';
-		
+
 		$additionalSkinData['SkinImageWidth'] = $this->getLInt();
 		$additionalSkinData['SkinImageHeight'] = $this->getLInt();
 		$skinData = $this->getString();
@@ -449,7 +518,7 @@ class BinaryStream {
 		$additionalSkinData['CapeImageWidth'] = $this->getLInt();
 		$additionalSkinData['CapeImageHeight'] = $this->getLInt();
 		$capeData = $this->getString();
-		
+
 		$skinGeomtryData = $this->getString();
 		if (strpos($skinGeomtryData, 'null') === 0) {
 			$skinGeomtryData = '';
@@ -459,11 +528,10 @@ class BinaryStream {
 		$additionalSkinData['PremiumSkin'] = $this->getByte();
 		$additionalSkinData['PersonaSkin'] = $this->getByte();
 		$additionalSkinData['CapeOnClassicSkin'] = $this->getByte();
-		
+
 		$additionalSkinData['CapeId'] = $this->getString();
 		$additionalSkinData['FullSkinId'] = $this->getString(); // Full Skin ID
 		if ($playerProtocol == Info::PROTOCOL_390 || $playerProtocol >= Info::PROTOCOL_406) {
-
 			$additionalSkinData['ArmSize'] = $this->getString();
 			$additionalSkinData['SkinColor'] = $this->getString();
 			$personaPieceCount = $this->getLInt();
@@ -479,7 +547,9 @@ class BinaryStream {
 			}
 			$additionalSkinData['PersonaPieces'] = $personaPieces;
 			$pieceTintColorCount = $this->getLInt();
-			$pieceTintColors = [];		
+			$pieceTintColors = [];
+			// for debug
+			var_dump('$pieceTintColorCount: ' . $pieceTintColorCount);
 			for($i = 0; $i < $pieceTintColorCount; ++$i){
 				$pieceType = $this->getString();
 				$colorCount = $this->getLInt();
@@ -561,6 +631,4 @@ class BinaryStream {
 		return $this->deviceId;
 	}
 
-
-	
 }

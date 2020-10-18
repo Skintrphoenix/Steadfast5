@@ -108,10 +108,10 @@ class AddPlayerPacket extends PEPacket{
 			$this->putVarInt($link['from']);
 			$this->putVarInt($link['to']);
 			$this->putByte($link['type']);
-			$this->putByte(0); //immediate 
+			$this->putByte(0); // immediate
 			if ($playerProtocol >= Info::PROTOCOL_406) {
-				$this->putByte(0);//whether the link was changes by the rider
-			}			
+				$this->putByte(0); // whether the link was changes by the rider
+			}
 		}
 		if ($playerProtocol >= Info::PROTOCOL_282) {
 			$this->putString($this->uuid->toString());

@@ -34,7 +34,6 @@ class InventoryContentPacket extends PEPacket {
 					} else {
 						$this->putSignedVarInt($index++);
 					}
-					
 				}
 			}
 			$this->putSlot($this->items[$i], $playerProtocol);

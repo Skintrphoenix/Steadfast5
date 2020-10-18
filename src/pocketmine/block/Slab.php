@@ -47,6 +47,10 @@ class Slab extends Solid{
 		return true;
 	}
 
+	public function isTransparent() {
+		return true;
+	}
+
 	public function getHardness(){
 		return 2;
 	}
