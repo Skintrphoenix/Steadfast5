@@ -94,9 +94,6 @@ class SpawnerCreature {
 				$pos = self::getPosition($index, $level);
 				if ($pos) {
 					$animal = $animals[array_rand($animals)];
-					if ($animal == "Wolf") {
-						$animal = $animals[array_rand($animals)];
-					}
 					BaseEntity::create($animal, $pos);
 					$anamalCount++;
 				}
@@ -116,8 +113,8 @@ class SpawnerCreature {
 					continue;
 				}
 
-				//"Ghast", "Blaze", "Creeper"
-				$monsters = array("Zombie", "Skeleton", "Spider", "PigZombie", "Enderman", "CaveSpider", "ZombieVillager");
+				//"Ghast", "Blaze", "PigZombie"
+				$monsters = array("Zombie", "Skeleton", "Spider", "Enderman", "CaveSpider", "Creeper");
 				$pos = self::getPosition($index, $level);
 				if ($pos) {
 					BaseEntity::create($monsters[array_rand($monsters)], $pos);

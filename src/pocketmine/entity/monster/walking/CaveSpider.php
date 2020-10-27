@@ -4,6 +4,7 @@ namespace pocketmine\entity\monster\walking;
 
 use pocketmine\entity\monster\WalkingMonster;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Effect;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -34,6 +35,9 @@ class CaveSpider extends WalkingMonster{
 			$this->attackDelay = 0;
 			$ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
 			$player->attack($ev->getFinalDamage(), $ev);
+			if(!$ev->isCancelled()){
+			    $this->addEffect(Effect::getEffect(Effect::POISON)->setAmplifier(0)->setDuration(300));
+			}
 		}
 	}
 

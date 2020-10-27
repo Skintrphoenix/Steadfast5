@@ -33,7 +33,7 @@ class FlintSteel extends Tool{
 	}
 
 	public function canBeActivated(){
-		return false;
+		return true;
 	}
 
 	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){

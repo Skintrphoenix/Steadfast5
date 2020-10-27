@@ -33,6 +33,7 @@ use pocketmine\level\generator\normal\biome\PlainBiome;
 use pocketmine\level\generator\normal\biome\RiverBiome;
 use pocketmine\level\generator\normal\biome\SmallMountainsBiome;
 use pocketmine\level\generator\normal\biome\TaigaBiome;
+use pocketmine\level\generator\hell\HellBiome;
 use pocketmine\level\generator\populator\Populator;
 use pocketmine\utils\Random;
 
@@ -77,7 +78,7 @@ abstract class Biome{
 	protected $temperature = 0.5;
 	protected $grassColor = 0;
 
-	protected static function register($id, Biome $biome){
+	public static function register($id, Biome $biome){
 		self::$biomes[(int) $id] = $biome;
 		$biome->setId((int) $id);
 		$biome->grassColor = self::generateBiomeColor($biome->getTemperature(), $biome->getRainfall());
@@ -99,6 +100,7 @@ abstract class Biome{
 		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
 
 		self::register(self::BIRCH_FOREST, new ForestBiome(ForestBiome::TYPE_BIRCH));
+		self::register(self::HELL, new HellBiome());
 	}
 
 	/**
@@ -108,6 +110,10 @@ abstract class Biome{
 	 */
 	public static function getBiome($id){
 		return isset(self::$biomes[$id]) ? self::$biomes[$id] : self::$biomes[self::OCEAN];
+	}
+
+	public static function getBiomes(){
+	    return self::$biomes;
 	}
 
 	public function clearPopulators(){

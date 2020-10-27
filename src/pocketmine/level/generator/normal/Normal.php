@@ -22,6 +22,8 @@
 namespace pocketmine\level\generator\normal;
 
 use pocketmine\block\Block;
+use pocketmine\level\generator\populator\Cave;
+use pocketmine\level\generator\populator\Pond;
 use pocketmine\block\CoalOre;
 use pocketmine\block\DiamondOre;
 use pocketmine\block\Dirt;
@@ -37,7 +39,7 @@ use pocketmine\level\generator\Generator;
 
 use pocketmine\level\generator\noise\Simplex;
 
-use pocketmine\level\generator\object\OreType;
+use pocketmine\level\generator\objects\OreType;
 use pocketmine\level\generator\populator\GroundCover;
 use pocketmine\level\generator\populator\Ore;
 use pocketmine\level\generator\populator\Populator;
@@ -123,9 +125,9 @@ class Normal extends Generator{
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new BiomeSelector($this->random, function($temperature, $rainfall){
 			if($rainfall < 0.25){
-				if($rainfall < 0.7){
+				if($temperature < 0.7){
 					return Biome::OCEAN;
-				}elseif($rainfall < 0.85){
+				}elseif($temperature < 0.85){
 					return Biome::RIVER;
 				}else{
 					return Biome::SWAMP;
@@ -147,9 +149,9 @@ class Normal extends Generator{
 					return Biome::BIRCH_FOREST;
 				}
 			}else{
-				if($rainfall < 0.25){
+				if($temperature < 0.25){
 					return Biome::MOUNTAINS;
-				}elseif($rainfall < 0.70){
+				}elseif($temperature < 0.70){
 					return Biome::SMALL_MOUNTAINS;
 				}else{
 					return Biome::RIVER;
@@ -173,6 +175,12 @@ class Normal extends Generator{
 
 		$cover = new GroundCover();
 		$this->generationPopulators[] = $cover;
+		$cave = new Cave();
+		$cave->setBaseAmount(0);
+		$cave->setRandomAmount(2);
+		$this->generationPopulators[] = $cave;
+		$ponds = new Pond();
+		$this->generationPopulators[] = $ponds;
 
 		$ores = new Ore();
 		$ores->setOreTypes([

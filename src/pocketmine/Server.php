@@ -45,7 +45,6 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\Snowball;
 use pocketmine\entity\Egg;
 use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
@@ -65,6 +64,9 @@ use pocketmine\level\format\pmanvil\PMAnvil;
 use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\Generator;
+use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\hell\Nether;
+use pocketmine\level\generator\normal\Normal;
 use pocketmine\level\Level;
 use pocketmine\metadata\EntityMetadataStore;
 use pocketmine\metadata\LevelMetadataStore;
@@ -144,7 +146,6 @@ use pocketmine\entity\monster\walking\SnowGolem;
 use pocketmine\entity\monster\walking\Spider;
 use pocketmine\entity\monster\walking\Wolf;
 use pocketmine\entity\monster\walking\Zombie;
-use pocketmine\entity\monster\walking\ZombieVillager;
 use pocketmine\entity\projectile\FireBall;
 use pocketmine\utils\MetadataConvertor;
 use pocketmine\event\server\SendRecipiesList;
@@ -273,6 +274,8 @@ class Server{
 
 	/** @var Level */
 	private $levelDefault = null;
+	/** @var Level */
+	private $levelNether = null;
 	
 	private $useAnimal;
 	private $animalLimit;
@@ -830,11 +833,11 @@ class Server{
 				new DoubleTag(2, $spawn->z)
 			]),
 			new StringTag("Level", $this->getDefaultLevel()->getName()),
-			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
-			//new IntTag("SpawnX", (int) $spawn->x),
-			//new IntTag("SpawnY", (int) $spawn->y),
-			//new IntTag("SpawnZ", (int) $spawn->z),
-			//new ByteTag("SpawnForced", 1), //TODO
+			new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
+			new IntTag("SpawnX", (int) $spawn->x),
+			new IntTag("SpawnY", (int) $spawn->y),
+			new IntTag("SpawnZ", (int) $spawn->z),
+			new ByteTag("SpawnForced", 1), //TODO
 			new Enum("Inventory", []),
 			new Compound("Achievements", []),
 			new IntTag("playerGameType", $this->getGamemode()),
@@ -996,6 +999,26 @@ class Server{
 			$this->levelDefault = $level;
 		}
 	}
+	
+	/**
+	 * @return Level
+	 */
+	public function getNetherLevel(){
+	    return $this->levelNether;
+	}
+	
+	/**
+	 * Sets the default level to a different level
+	 * This won't change the level-name property,
+	 * it only affects the server on runtime
+	 *
+	 * @param Level $level
+	 */
+	public function setNetherLevel($level){
+	    if($level === null or ($this->isLevelLoaded($level->getFolderName()) and $level !== $this->levelNether)){
+	        $this->levelNether = $level;
+	    }
+	}
 
 	/**
 	 * @param string $name
@@ -1116,7 +1139,7 @@ class Server{
 	 *
 	 * @return bool
 	 */
-	public function generateLevel($name, $seed = null, $options = []){
+	public function generateLevel($name, $seed = null, $options = [], string $generatorName = "default"){
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
@@ -1130,7 +1153,7 @@ class Server{
 		try{
 			$path = $this->getDataPath() . "worlds/" . $name . "/";
 			/** @var \pocketmine\level\format\LevelProvider $provider */
-			$provider::generate($path, $name, $seed, $options);
+			$provider::generate($path, $name, $seed, $options, $generatorName);
 
 			$level = new Level($this, $name, $path, $provider);
 			$this->levels[$level->getId()] = $level;
@@ -1513,20 +1536,20 @@ class Server{
 		$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
 			"motd" => "Minecraft: PE Server",
 			"server-port" => 19132,
-			"memory-limit" => "256M",
+			"memory-limit" => "4096M",
 			"white-list" => false,
 			"spawn-protection" => 16,
-			"max-players" => 20,
+			"max-players" => 1300,
 			"allow-flight" => false,
 			"spawn-animals" => true,
-			"animals-limit" => 0,
+			"animals-limit" => 90,
 			"spawn-mobs" => true,
-			"mobs-limit" => 0,
+			"mobs-limit" => 90,
 			"gamemode" => 0,
 			"force-gamemode" => false,
 			"hardcore" => false,
 			"pvp" => true,
-			"difficulty" => 1,
+			"difficulty" => 3,
 			"generator-settings" => "",
 			"level-name" => "world",
 			"level-seed" => "",
@@ -1535,8 +1558,8 @@ class Server{
 			"enable-rcon" => false,
 			"rcon.password" => substr(base64_encode(@Utils::getRandomBytes(20, false)), 3, 10),
 			"auto-save" => true,
-			"auto-generate" => false,
-			"save-player-data" => false,
+			"auto-generate" => true,
+			"save-player-data" => true,
 			"time-update" => true,
 			"use-encrypt" => false
 		]);
@@ -1565,15 +1588,15 @@ class Server{
 		$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 		$this->banByIP->load();
 
-		$this->maxPlayers = $this->getConfigInt("max-players", 20);
+		$this->maxPlayers = $this->getConfigInt("max-players", 1300);
 		$this->setAutoSave($this->getConfigBoolean("auto-save", true));
-		$this->setAutoGenerate($this->getConfigBoolean("auto-generate", false));
-		$this->setSavePlayerData($this->getConfigBoolean("save-player-data", false));
+		$this->setAutoGenerate($this->getConfigBoolean("auto-generate", true));
+		$this->setSavePlayerData($this->getConfigBoolean("save-player-data", true));
 		
-		$this->useAnimal = $this->getConfigBoolean("spawn-animals", false);
-		$this->animalLimit = $this->getConfigInt("animals-limit", 0);
-		$this->useMonster = $this->getConfigBoolean("spawn-mobs", false);
-		$this->monsterLimit = $this->getConfigInt("mobs-limit", 0);
+		$this->useAnimal = $this->getConfigBoolean("spawn-animals", true);
+		$this->animalLimit = $this->getConfigInt("animals-limit", 90);
+		$this->useMonster = $this->getConfigBoolean("spawn-mobs", true);
+		$this->monsterLimit = $this->getConfigInt("mobs-limit", 90);
 		$this->isUseEncrypt = $this->getConfigBoolean("use-encrypt", false);
 
 		if(($memory = str_replace("B", "", strtoupper($this->getConfigString("memory-limit", "256M")))) !== false){
@@ -1584,7 +1607,7 @@ class Server{
 			}
 			@ini_set("memory_limit", $memory);
 		}else{
-			$this->setConfigString("memory-limit", "256M");
+			$this->setConfigString("memory-limit", "4096M");
 		}
 		$this->network = new Network($this);
 		$this->network->setName($this->getMotd());
@@ -1667,6 +1690,10 @@ class Server{
 
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
 
+		Generator::addGenerator(Normal::class, "default");
+		Generator::addGenerator(Flat::class, "flat");
+		Generator::addGenerator(Nether::class, "nether");
+
 		LevelProviderManager::addProvider($this, Anvil::class);
 		LevelProviderManager::addProvider($this, PMAnvil::class);
 		LevelProviderManager::addProvider($this, McRegion::class);
@@ -1696,12 +1723,28 @@ class Server{
 			}
 			if($this->loadLevel($default) === false){
 				$seed = $this->getConfigInt("level-seed", time());
-				$this->generateLevel($default, $seed === 0 ? time() : $seed);
+				$genSettings = explode(":", $this->getConfigString("generator-settings", ""));
+				$options = [];
+				if(count($genSettings) > 0){
+				    $options = [
+				        "preset" => implode(":", $genSettings),
+				    ];
+				}
+				$generatorName = $this->getConfigString("level-type", "default");
+				$this->generateLevel($default, $seed === 0 ? time() : $seed, $options, $generatorName);
 			}
 
 			$this->setDefaultLevel($this->getLevelByName($default));
 		}
 
+		if($this->getNetherLevel() === null){
+		    if($this->loadLevel("nether") === false){
+		        $seed = $this->getConfigInt("level-seed", time());
+		        $this->generateLevel("nether", $seed === 0 ? time() : $seed, [], "nether");
+		    }
+		    
+		    $this->setNetherLevel($this->getLevelByName("nether"));
+		}
 
 		$this->properties->save();
 
@@ -2517,7 +2560,6 @@ class Server{
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Snowball::class);
 		Entity::registerEntity(Egg::class);
-		Entity::registerEntity(Villager::class);
 		Entity::registerEntity(Squid::class);
 		Entity::registerEntity(Human::class, true);		
 		
@@ -2541,7 +2583,6 @@ class Server{
 		Entity::registerEntity(Spider::class);
 		Entity::registerEntity(Wolf::class);
 		Entity::registerEntity(Zombie::class);
-		Entity::registerEntity(ZombieVillager::class);
 		Entity::registerEntity(FireBall::class);
 		Entity::registerEntity(BottleOEnchanting::class);
 		Entity::registerEntity(ExperienceOrb::class);

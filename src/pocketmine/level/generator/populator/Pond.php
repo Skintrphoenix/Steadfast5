@@ -22,8 +22,10 @@
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Water;
+use pocketmine\block\Lava;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
+use pocketmine\block\Block;
 
 class Pond extends Populator{
 	private $waterOdd = 4;
@@ -33,9 +35,12 @@ class Pond extends Populator{
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		if($random->nextRange(0, $this->waterOdd) === 0){
 			$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 16);
-			$y = $random->nextBoundedInt($level->getMaxY());
 			$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 16);
-			$pond = new \pocketmine\level\generator\object\Pond($random, new Water());
+			$y = $this->getHighestWorkableBlock($level, $x, $z);
+			$pond = new \pocketmine\level\generator\objects\Pond($random, new Water());
+			if($random->nextRange(0, $this->lavaOdd) === 0){
+			    $pond = new \pocketmine\level\generator\objects\Pond($random, new Lava());
+			}
 			if($pond->canPlaceObject($level, $x, $y, $z)){
 				$pond->placeObject($level, $x, $y, $z);
 			}
@@ -52,5 +57,23 @@ class Pond extends Populator{
 
 	public function setLavaSurfaceOdd($lavaSurfaceOdd){
 		$this->lavaSurfaceOdd = $lavaSurfaceOdd;
+	}
+	
+	/**
+	 * Gets the top block (y) on an x and z axes
+	 * @param int $x
+	 * @param int $z
+	 */
+	protected function getHighestWorkableBlock($level, $x, $z) {
+	    for($y = $level->getMaxY() - 1; $y > 0; -- $y) {
+	        $b = $level->getBlockIdAt($x, $y, $z);
+	        if ($b === Block::DIRT or $b === Block::GRASS or $b === Block::PODZOL) {
+	            break;
+	        } elseif ($b !== 0 and $b !== Block::SNOW_LAYER) {
+	            return - 1;
+	        }
+	    }
+	    
+	    return ++$y;
 	}
 }
