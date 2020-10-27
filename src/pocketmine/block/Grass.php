@@ -64,6 +64,13 @@ class Grass extends Solid{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		return false;
+	    if($item->isHoe()){
+	        $item->useOn($this);
+	        $this->getLevel()->setBlock($this, Block::get(Item::FARMLAND, 0), true);
+	        
+	        return true;
+	    }
+	    
+	    return false;
 	}
 }

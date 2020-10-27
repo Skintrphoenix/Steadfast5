@@ -24,7 +24,7 @@ namespace pocketmine\level\generator\populator;
 use pocketmine\block\Block;
 use pocketmine\block\Sapling;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\object\Tree as ObjectTree;
+use pocketmine\level\generator\objects\Tree as ObjectTree;
 use pocketmine\utils\Random;
 
 class Tree extends Populator{

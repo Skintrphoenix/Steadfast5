@@ -131,7 +131,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$pk = new EntityEventPacket();
 		$pk->eid = $this->getId();
-		$pk->event = $this->getHealth() <= 0 ? EntityEventPacket::DEATH_ANIMATION : EntityEventPacket::HURT_ANIMATION; //Ouch!
+		$pk->event = EntityEventPacket::HURT_ANIMATION; //Ouch!
 		Server::broadcastPacket($this->hasSpawned, $pk);
 
 		$this->attackTime = 10; //0.5 seconds cooldown

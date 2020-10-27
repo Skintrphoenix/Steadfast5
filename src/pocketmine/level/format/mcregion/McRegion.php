@@ -67,7 +67,7 @@ class McRegion extends BaseLevelProvider{
 		return $isValid;
 	}
 
-	public static function generate($path, $name, $seed, array $options = []){
+	public static function generate($path, $name, $seed, array $options = [], string $generatorName){
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}
@@ -90,7 +90,7 @@ class McRegion extends BaseLevelProvider{
 			"RandomSeed" => new LongTag("RandomSeed", $seed),
 			"SizeOnDisk" => new LongTag("SizeOnDisk", 0),
 			"Time" => new LongTag("Time", 0),
-			"generatorName" => new StringTag("generatorName", "FLAT"),
+			"generatorName" => new StringTag("generatorName", $generatorName),
 			"generatorOptions" => new StringTag("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
 			"LevelName" => new StringTag("LevelName", $name),
 			"GameRules" => new Compound("GameRules", [])

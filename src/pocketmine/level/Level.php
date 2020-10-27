@@ -99,6 +99,7 @@ use pocketmine\level\generator\GenerationTask;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
+use pocketmine\level\generator\biome\Biome;
 use pocketmine\utils\Random;
 use pocketmine\level\generator\PopulationTask;
 use pocketmine\nbt\NBT;
@@ -119,10 +120,10 @@ class Level implements ChunkManager, Metadatable{
 
 	const TIME_DAY = 0;
 	const TIME_SUNSET = 12000;
-	const TIME_NIGHT = 14000;
-	const TIME_SUNRISE = 23000;
+	const TIME_NIGHT = 16000;
+	const TIME_SUNRISE = 29000;
 
-	const TIME_FULL = 24000;
+	const TIME_FULL = 30000;
 
 	/** @var Tile[] */
 	protected $tiles = [];
@@ -2232,7 +2233,7 @@ class Level implements ChunkManager, Metadatable{
 		if (!is_null($this->generator)) {
 			$size = $this->server->getScheduler()->getAsyncTaskPoolSize();
 			for($i = 0; $i < $size; ++$i){
-				$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this,  $this->generatorInstance), $i);
+				$this->server->getScheduler()->scheduleAsyncTaskToWorker(new GeneratorRegisterTask($this,  $this->generatorInstance, Biome::getBiomes()), $i);
 			}
 		}
 	}

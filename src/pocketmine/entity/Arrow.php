@@ -40,9 +40,8 @@ class Arrow extends Projectile {
 	protected $drag = 0.01;
 	protected $damage = 2;
 
-	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null, $critical = false) {
+	public function __construct(FullChunk $chunk, Compound $nbt, Entity $shootingEntity = null) {
 		parent::__construct($chunk, $nbt, $shootingEntity);
-		$this->setCritical($critical);
 	}
 
 	public function onUpdate($currentTick) {
@@ -64,14 +63,6 @@ class Arrow extends Projectile {
 		}
 		return $hasUpdate;
 	}
-
-	public function isCritical(){
-	    return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CRITICAL);
-    }
-
-    public function setCritical($critical = true){
-        $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CRITICAL, $critical);
-    }
 
 	public function spawnTo(Player $player) {
 		if (!isset($this->hasSpawned[$player->getId()]) && isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])) {
