@@ -19,6 +19,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\Enum;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\network\protocol\MobEquipmentPacket;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Skeleton extends WalkingMonster implements ProjectileSource{
@@ -111,7 +112,7 @@ class Skeleton extends WalkingMonster implements ProjectileSource{
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+		    && ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE || $time > Level::TIME_DAY)
 		){
 			$this->setOnFire(100);
 		}

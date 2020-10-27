@@ -21,13 +21,31 @@
 
 namespace pocketmine\level\generator\normal\biome;
 
-
+use pocketmine\level\generator\populator\Cactus;
+use pocketmine\level\generator\populator\Deadbush;
+use pocketmine\level\generator\populator\SugarCane;
 
 class DesertBiome extends SandyBiome{
 
 	public function __construct(){
 		parent::__construct();
 		$this->setElevation(63, 69);
+
+		$deadbush = new Deadbush();
+		$deadbush->setBaseAmount(1);
+		$deadbush->setRandomAmount(2);
+		
+		$cactus = new Cactus();
+		$cactus->setBaseAmount(1);
+		$cactus->setRandomAmount(2);
+		
+		$sugarcane = new SugarCane();
+		$sugarcane->setRandomAmount(20);
+		$sugarcane->setBaseAmount(3);
+		
+		$this->addPopulator($deadbush);
+		$this->addPopulator($cactus);
+		$this->addPopulator($sugarcane);
 
 		$this->temperature = 2;
 		$this->rainfall = 0;

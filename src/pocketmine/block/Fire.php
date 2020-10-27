@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\Server;
+use pocketmine\PortalChecker;
 
 class Fire extends Flowable{
 
@@ -77,6 +78,10 @@ class Fire extends Flowable{
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
+		    if($this->getSide(0)->getId() === self::OBSIDIAN) {
+		        PortalChecker::tryMakePortal($this);
+		        return Level::BLOCK_UPDATE_NORMAL;
+		    }
 			for($s = 0; $s <= 5; ++$s){
 				$side = $this->getSide($s);
 				if($side->getId() !== self::AIR and !($side instanceof Liquid)){
@@ -92,9 +97,6 @@ class Fire extends Flowable{
 
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
-		}elseif($type === Level::BLOCK_UPDATE_TOUCH) {
-			$this->getLevel()->setBlock($this, new Air(), true);
-			return Level::BLOCK_UPDATE_NORMAL;
 		}
 
 		return false;

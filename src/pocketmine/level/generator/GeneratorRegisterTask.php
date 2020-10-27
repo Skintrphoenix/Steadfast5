@@ -38,19 +38,23 @@ class GeneratorRegisterTask extends AsyncTask{
 	public $levelId;
 	protected $yMask;
 	protected $maxY;
+	private $biomes;
 
-	public function __construct(Level $level, Generator $generator){
+	public function __construct(Level $level, Generator $generator, array $biomes){
 		$this->generator = get_class($generator);
 		$this->settings = serialize($generator->getSettings());
 		$this->seed = $level->getSeed();
 		$this->levelId = $level->getId();
 		$this->yMask = $level->getYMask();
 		$this->maxY = $level->getMaxY();
+		$this->biomes = $biomes;
 	}
 
 	public function onRun(){
 		Block::init();
-		Biome::init();
+		foreach($this->biomes as $id => $biome){
+		    Biome::register($id, $biome);
+		}
 
 		$manager = new SimpleChunkManager($this->seed, $this->yMask, $this->maxY);	
 		$this->saveToThreadStore("generation.level{$this->levelId}.manager", $manager);

@@ -1692,6 +1692,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$this->saturation = min ($this->foodLevel, $this->saturation + $foodData['saturation']);
 			$this->setFood($this->foodLevel);
 
+			$position = [ 'x' => $this->getX(), 'y' => $this->getY(), 'z' => $this->getZ() ];
+			$this->sendSound("SOUND_BURP", $position, 63);
 			switch ($foodId) {
 				case Item::BEETROOT_SOUP:
 				case Item::MUSHROOM_STEW:
@@ -1699,14 +1701,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 					$this->inventory->addItem(Item::get(Item::BOWL, 0, 1));
 					break;
 				case Item::GOLDEN_APPLE:
-					$this->addEffect(Effect::getEffect(Effect::REGENERATION)->setAmplifier(1)->setDuration(5 * 20));
-//						$this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setAmplifier(0)->setDuration(120 * 20));
-					break;
-				case Item::ENCHANTED_GOLDEN_APPLE:
-					$this->addEffect(Effect::getEffect(Effect::REGENERATION)->setAmplifier(4)->setDuration(30 * 20));
-//						$this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setAmplifier(0)->setDuration(120 * 20));
-					$this->addEffect(Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setAmplifier(0)->setDuration(300 * 20));
-					$this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setAmplifier(0)->setDuration(300 * 20));
+					$this->heal(20.0, new EntityRegainHealthEvent($this, 20.0, EntityRegainHealthEvent::CAUSE_EATING));
 					break;
 			}
 		} else {
@@ -2110,7 +2105,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 						break;
 					case EntityEventPacket::FEED:
 						$position = [ 'x' => $this->x, 'y' => $this->y, 'z' => $this->z ];
-						$this->sendSound(LevelSoundEventPacket::SOUND_EAT, $position);
+						$slot = $this->inventory->getItemInHand();
+						if($slot instanceof Potion || $slot->getId() == Item::BUCKET && $slot->getDamage() == 1) {
+						    $this->sendSound('SOUND_DRINK', $position, 63);
+						} else {
+						    $this->sendSound(LevelSoundEventPacket::SOUND_EAT, $position, 63);
+						}
 						break;
 				}
 				//Timings::$timerEntityEventPacket->stopTiming();
@@ -3266,8 +3266,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$this->inventory->setHeldItemSlot($this->inventory->getHotbarSlotIndex(0));
 		}
 
-		if ($this->spawnPosition === null and isset($this->namedtag->SpawnLevel) and ( $level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level) {
-			$this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+		if ($this->spawnPosition === null) {
+		    if(isset($this->namedtag->SpawnLevel) and ( $level = $this->server->getLevelByName($this->namedtag["SpawnLevel"])) instanceof Level){
+		        $this->spawnPosition = new Position($this->namedtag["SpawnX"], $this->namedtag["SpawnY"], $this->namedtag["SpawnZ"], $level);
+		    } else {
+		        $this->spawnPosition = $this->getSpawn();
+		    }
 		}
 
 		$this->server->getPluginManager()->callEvent($ev = new PlayerLoginEvent($this, "Plugin reason"));
@@ -3275,9 +3279,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$this->close(TextFormat::YELLOW . $this->username . " has left the game", $ev->getKickMessage());
 			return;
 		}
-		$spawnPosition = $this->getSpawn();
-		$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $spawnPosition));
-		$this->setPosition($ev->getRespawnPosition());
 
 		$pk = new StartGamePacket();
 		$pk->seed = -1;
@@ -3285,9 +3286,9 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$pk->x = $this->x;
 		$pk->y = $this->y + $this->getEyeHeight();
 		$pk->z = $this->z;
-		$pk->spawnX = (int) $spawnPosition->x;
-		$pk->spawnY = (int) ($spawnPosition->y + $this->getEyeHeight());
-		$pk->spawnZ = (int) $spawnPosition->z;
+		$pk->spawnX = (int) $this->spawnPosition->x;
+		$pk->spawnY = (int) ($this->spawnPosition->y + $this->getEyeHeight());
+		$pk->spawnZ = (int) $this->spawnPosition->z;
 		$pk->generator = 1; //0 old, 1 infinite, 2 flat
 		$pk->gamemode = $this->gamemode == 3 ? 1 : $this->gamemode;
 		$pk->eid = $this->id;
@@ -4482,7 +4483,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$diff = ($this->server->getTick() - $this->startAction);
 			$p = $diff / 20;
 			$f = min((($p ** 2) + $p * 2) / 3, 1) * 2;
-			$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this, $f >= 1), $f);
+			$ev = new EntityShootBowEvent($this, $bow, Entity::createEntity("Arrow", $this->chunk, $nbt, $this), $f);
 
 			if ($f < 0.1 or $diff < 5) {
 				$ev->setCancelled();

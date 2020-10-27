@@ -22,8 +22,11 @@
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Sapling;
+use pocketmine\block\Wood;
 use pocketmine\level\generator\populator\TallGrass;
 use pocketmine\level\generator\populator\Tree;
+use pocketmine\level\generator\populator\Bush;
+use pocketmine\level\generator\populator\FallenTree;
 
 class ForestBiome extends GrassyBiome{
 
@@ -40,6 +43,15 @@ class ForestBiome extends GrassyBiome{
 		$trees = new Tree($type === self::TYPE_BIRCH ? Sapling::BIRCH : Sapling::OAK);
 		$trees->setBaseAmount(5);
 		$this->addPopulator($trees);
+
+		$bush = new Bush($type ===self::TYPE_BIRCH ? Wood::BIRCH : Wood::OAK);
+		$bush->setBaseAmount(10);
+		$this->addPopulator($bush);
+		
+		$fallen = new FallenTree($type === self::TYPE_BIRCH ? Sapling::BIRCH : Sapling::OAK);
+		$fallen->setBaseAmount(0);
+		$fallen->setRandomAmount(4);
+		$this->addPopulator($fallen);
 
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(3);

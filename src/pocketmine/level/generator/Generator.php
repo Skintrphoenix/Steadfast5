@@ -59,7 +59,7 @@ abstract class Generator{
 			return Generator::$list[$name];
 		}
 
-		return Normal::class;
+		return null;
 	}
 
 	public static function getGeneratorName($class){

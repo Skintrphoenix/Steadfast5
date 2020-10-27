@@ -71,7 +71,7 @@ class Zombie extends WalkingMonster implements Ageable{
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
 		if(
 			!$this->isOnFire()
-			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
+			&& ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE || $time > Level::TIME_DAY)
 		){
 			$this->setOnFire(100);
 		}

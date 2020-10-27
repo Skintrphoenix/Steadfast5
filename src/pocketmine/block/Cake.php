@@ -95,7 +95,7 @@ class Cake extends Transparent{
 			$player->heal($ev->getAmount(), $ev);
 		}
 		++$this->meta;
-		$player->setFood($player->getFood());
+		$player->setFood($player->getFood() + 2);
 		if ($this->meta >= 0x06) {
 			$this->getLevel()->setBlock($this, new Air(), true);
 		} else {

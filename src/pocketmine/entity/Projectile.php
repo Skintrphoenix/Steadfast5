@@ -136,9 +136,6 @@ abstract class Projectile extends Entity {
 				$this->server->getPluginManager()->callEvent(new ProjectileHitEvent($this));
 				$motion = sqrt($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2);
 				$damage = ceil($motion * $this->damage);
-				if ($this instanceof Arrow && $this->isCritical()) {
-				    $damage += mt_rand(0, (int) ($damage / 2) + 1);
-				}
 				if ($this->shootingEntity === null) {
 					$ev = new EntityDamageByEntityEvent($this, $nearEntity, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 				} else {

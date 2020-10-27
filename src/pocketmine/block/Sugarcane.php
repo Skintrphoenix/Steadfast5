@@ -36,6 +36,10 @@ class Sugarcane extends Flowable{
 		$this->meta = $meta;
 	}
 
+	public function canBeActivated(){
+	    return true;
+	}
+
 	public function getName(){
 		return "Sugarcane";
 	}
