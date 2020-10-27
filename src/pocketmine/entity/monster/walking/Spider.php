@@ -41,7 +41,7 @@ class Spider extends WalkingMonster{
 		}
 
 		if(!$this->isAlive()){
-			if(++$this->deadTicks >= 23){
+			if(++$this->deadTicks >= 3){
 				$this->close();
 				return false;
 			}

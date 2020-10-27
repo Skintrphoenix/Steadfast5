@@ -1458,11 +1458,11 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 
 		if($this->dead === true and $this->spawned){
 			++$this->deadTicks;
-			if($this->deadTicks >= 10){
+			if($this->deadTicks >= 3){
 				$this->despawnFromAll();
 			}
 			//$this->timings->stopTiming();
-			return $this->deadTicks < 10;
+			return $this->deadTicks < 3;
 		}
 
 		if($this->spawned){
@@ -3765,7 +3765,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 
 		$target = $this->level->getEntity($targetId);
 		if ($target instanceof Player && ($this->server->getConfigBoolean("pvp", true) === false || ($target->getGamemode() & 0x01) > 0 || !$this->canAttackPlayers())) {
-			$target->attackInCreative($this);
 			return;
 		}
 

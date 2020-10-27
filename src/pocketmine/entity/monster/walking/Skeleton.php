@@ -112,7 +112,7 @@ class Skeleton extends WalkingMonster implements ProjectileSource{
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
 		if(
 			!$this->isOnFire()
-		    && ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE || $time > Level::TIME_DAY)
+		    && ($time < Level::TIME_NIGHT || $time > Level::TIME_SUNRISE)
 		){
 			$this->setOnFire(100);
 		}
