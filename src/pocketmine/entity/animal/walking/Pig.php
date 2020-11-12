@@ -33,10 +33,10 @@ class Pig extends WalkingAnimal implements Rideable{
 	}
 
 	public function getDrops(){
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
-			return [Item::get(Item::RAW_PORKCHOP, 0, 1)];
-		}
-		return [];
+	    if($this->isOnFire()){
+	        return [Item::get(Item::COOKED_PORKCHOP, 0, 1)];
+	    }
+		return [Item::get(Item::RAW_PORKCHOP, 0, 1)];
 	}
 
 }
