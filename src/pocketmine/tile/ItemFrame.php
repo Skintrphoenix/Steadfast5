@@ -85,7 +85,6 @@ class ItemFrame extends Spawnable{
         $this->spawnToAll();
         if($this->chunk instanceof FullChunk){
             $this->chunk->setChanged();
-            $this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
         }
     }
     

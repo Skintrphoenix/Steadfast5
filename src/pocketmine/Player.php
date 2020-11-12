@@ -35,6 +35,7 @@ use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
 use pocketmine\entity\Projectile;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\event\block\ItemFrameDropItemEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
@@ -137,6 +138,7 @@ use pocketmine\network\protocol\SetHealthPacket;
 use pocketmine\network\protocol\UpdateBlockPacket;
 use pocketmine\network\protocol\ChunkRadiusUpdatePacket;
 use pocketmine\network\protocol\InteractPacket;
+use pocketmine\network\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -146,6 +148,7 @@ use pocketmine\scheduler\CallbackTask;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\tile\ItemFrame;
 use pocketmine\utils\TextFormat;
 use pocketmine\network\protocol\SetPlayerGameTypePacket;
 use pocketmine\block\Liquid;
@@ -1734,6 +1737,44 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		}
 
 		switch($packet->pname()){
+		    case 'ITEM_FRAME_DROP_ITEM_PACKET':
+		        $tile = null;
+		        //$tile = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
+		        $tile = $this->getLevel()->getTile($this->getTargetBlock(5));
+		        
+		         if(!$tile instanceof ItemFrame){ 
+		            $nbt = new Compound("", [
+		                new StringTag("id", Tile::ITEM_FRAME),
+		                new IntTag("x", $this->x),
+		                new IntTag("y", $this->y),
+		                new IntTag("z", $this->z),
+		                new ByteTag("ItemRotation", 0),
+		                new FloatTag("ItemDropChance", 1.0)
+		            ]);
+		            $tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
+		        }/*
+		        var_dump($packet->x);
+		        var_dump($packet->y);
+		        var_dump($packet->z);
+		        var_dump(new Vector3($packet->x, $packet->y, $packet->z));
+		        var_dump($tile);*/
+		        if($tile instanceof ItemFrame){
+		            if($tile->getItem()->getId() !== Item::AIR){
+		                $ev = new ItemFrameDropItemEvent($this->getLevel()->getBlock($tile), $this, $tile->getItem(), $tile->getItemDropChance());
+		                $this->getServer()->getPluginManager()->callEvent($ev);
+		                if(!$ev->isCancelled()){
+		                    if((mt_rand(0, 10) / 10.0) <= $ev->getItemDropChance()){
+		                        $this->level->dropItem($this->getTargetBlock(5), $ev->getDropItem());
+		                    }
+		                    $tile->setItem(Item::get(Item::AIR));
+		                    $tile->setItemRotation(0);
+		                }
+		            }
+		        } else {
+		            $this->sendMessage("Internal error occured, item frame is either corrupt or missing.");
+		            $this->sendMessage("If you are a mobile user, try aiming where your crosshair would be (The exact center of your screen) at the item frame while hitting it to solve this issue!");
+		        }
+		        break;
             case 'SET_PLAYER_GAMETYPE_PACKET':
                 file_put_contents("./logs/possible_hacks.log", date('m/d/Y h:i:s a', time()) . " SET_PLAYER_GAMETYPE_PACKET " . $this->username . PHP_EOL, FILE_APPEND | LOCK_EX);
                 break;

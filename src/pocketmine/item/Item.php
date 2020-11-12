@@ -1007,6 +1007,7 @@ class Item{
 			self::$list[self::JUNGLE_DOOR] = JungleDoor::class;
 			self::$list[self::ACACIA_DOOR] = AcaciaDoor::class;
 			self::$list[self::DARK_OAK_DOOR] = DarkOakDoor::class;
+			self::$list[self::ITEM_FRAME] = ItemFrame::class;
 
 			self::$list[self::SPLASH_POTION] = SplashPotion::class;
             

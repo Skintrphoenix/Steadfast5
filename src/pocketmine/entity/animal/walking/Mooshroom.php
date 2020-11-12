@@ -33,9 +33,7 @@ class Mooshroom extends WalkingAnimal{
 
 	public function getDrops(){
 		$drops = [];
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
-			  $drops[] = Item::get(Item::MUSHROOM_STEW, 0, 1);
-		}
+	    $drops[] = Item::get(Item::MUSHROOM_STEW, 0, 1);
 		return $drops;
 	}
 }

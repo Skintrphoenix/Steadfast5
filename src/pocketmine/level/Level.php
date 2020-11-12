@@ -119,8 +119,8 @@ class Level implements ChunkManager, Metadatable{
 	const BLOCK_UPDATE_TOUCH = 5;
 
 	const TIME_DAY = 0;
-	const TIME_SUNSET = 12000;
-	const TIME_NIGHT = 16000;
+	const TIME_SUNSET = 16000;
+	const TIME_NIGHT = 19000;
 	const TIME_SUNRISE = 29000;
 
 	const TIME_FULL = 30000;

@@ -618,6 +618,7 @@ class CraftingManager{
 
 	protected function registerFood(){
 		//TODO: check COOKIES
+	    $this->registerRecipe((new ShapelessRecipe(Item::get(Item::GOLDEN_APPLE, 0, 1)))->addIngredient(Item::get(Item::GOLD_INGOT, 0, 4)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::MELON_SEEDS, 0, 1)))->addIngredient(Item::get(Item::MELON_SLICE, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::PUMPKIN_SEEDS, 0, 4)))->addIngredient(Item::get(Item::PUMPKIN, 0, 1)));
 		$this->registerRecipe((new ShapelessRecipe(Item::get(Item::PUMPKIN_PIE, 0, 1)))->addIngredient(Item::get(Item::PUMPKIN, 0, 1))->addIngredient(Item::get(Item::EGG, 0, 1))->addIngredient(Item::get(Item::SUGAR, 0, 1)));

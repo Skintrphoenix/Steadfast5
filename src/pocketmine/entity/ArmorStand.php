@@ -87,7 +87,7 @@ class ArmorStand extends Entity {
 	}
 	
 	public function isNeedSaveOnChunkUnload() {
-		return false;
+		return true;
 	}
 
 }

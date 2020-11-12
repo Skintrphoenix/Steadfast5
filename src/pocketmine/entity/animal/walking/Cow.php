@@ -32,14 +32,16 @@ class Cow extends WalkingAnimal{
 	}
 
 	public function getDrops(){
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
-			switch(mt_rand(0, 1)){
+			switch(mt_rand(0, 2)){
 				case 0:
+				    if($this->isOnFire()){
+				        return [Item::get(Item::COOKED_BEEF, 0, 1)];
+				    }
 					return [Item::get(Item::RAW_BEEF, 0, 1)];
 				case 1:
 					return [Item::get(Item::LEATHER, 0, 1)];
+				case 2:
+				    return [Item::get(Item::BUCKET, 1, 1)];
 			}
-		}
-		return [];
 	}
 }
