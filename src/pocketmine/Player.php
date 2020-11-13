@@ -1740,7 +1740,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		    case 'ITEM_FRAME_DROP_ITEM_PACKET':
 		        $tile = null;
 		        //$tile = $this->getLevel()->getTile(new Vector3($packet->x, $packet->y, $packet->z));
-		        $tile = $this->getLevel()->getTile($this->getTargetBlock(5));
+		        $tile = $this->getLevel()->getTile($this->getTargetBlock(5)); //Hack to fix bug since packet is broken
 		        
 		         if(!$tile instanceof ItemFrame){ 
 		            $nbt = new Compound("", [
@@ -2967,7 +2967,80 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		){
 			$source->setCancelled();
 		}
-
+		
+		$canBeBlocked = [
+		    EntityDamageEvent::CAUSE_ENTITY_ATTACK,
+		    EntityDamageEvent::CAUSE_PROJECTILE,
+		    EntityDamageEvent::CAUSE_FIRE,
+		    EntityDamageEvent::CAUSE_LAVA,
+		    EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
+		    EntityDamageEvent::CAUSE_ENTITY_EXPLOSION,
+		    EntityDamageEvent::CAUSE_CUSTOM,
+		    EntityDamageEvent::CAUSE_CONTACT,
+		];
+		
+		if(in_array($source->getCause(), $canBeBlocked) && !$source->isCancelled()){
+		    $armorValues = [
+		        Item::LEATHER_CAP => 1,
+		        Item::LEATHER_TUNIC => 3,
+		        Item::LEATHER_PANTS => 2,
+		        Item::LEATHER_BOOTS => 1,
+		        Item::CHAIN_HELMET => 1,
+		        Item::CHAIN_CHESTPLATE => 5,
+		        Item::CHAIN_LEGGINGS => 4,
+		        Item::CHAIN_BOOTS => 1,
+		        Item::GOLD_HELMET => 1,
+		        Item::GOLD_CHESTPLATE => 5,
+		        Item::GOLD_LEGGINGS => 3,
+		        Item::GOLD_BOOTS => 1,
+		        Item::IRON_HELMET => 2,
+		        Item::IRON_CHESTPLATE => 6,
+		        Item::IRON_LEGGINGS => 5,
+		        Item::IRON_BOOTS => 2,
+		        Item::DIAMOND_HELMET => 3,
+		        Item::DIAMOND_CHESTPLATE => 8,
+		        Item::DIAMOND_LEGGINGS => 6,
+		        Item::DIAMOND_BOOTS => 3,
+		    ];
+		    $points = 0;
+		    foreach ($this->getInventory()->getArmorContents() as $index => $i) {
+		        if (isset($armorValues[$i->getId()])) {
+		            $points += $armorValues[$i->getId()];
+		        }
+		    }
+		    
+		    $source->setDamage(EntityDamageEvent::MODIFIER_ARMOR, -floor($source->getDamage(EntityDamageEvent::MODIFIER_BASE) * $points * 0.04));
+		    
+		    $damage = 0;
+		    foreach($this->getInventory()->getArmorContents() as $key => $item){
+		        if($item instanceof Armor){
+		            if(($thornsLevel = $item->getEnchantment(Enchantment::getEnchantment(Enchantment::TYPE_ARMOR_THORNS))) > 0 && $source instanceof EntityDamageByEntityEvent){
+		                if(mt_rand(1, 100) < $thornsLevel * 15){
+		                    $item->removeDurability(3);
+		                    $damage += ($thornsLevel > 10 ? $thornsLevel - 10 : random_int(0, 4));
+		                }else{
+		                    $item->removeDurability();
+		                }
+		            } else {
+		                $item->removeDurability();
+		            }
+		            
+		            $this->getInventory()->setArmorItem($key, $item);
+		            if($item->getDamage() >= $item->getMaxDurability()) {
+		                $this->getInventory()->setArmorItem($key, Item::get(Item::AIR));
+		            }
+		            $this->getInventory()->setArmorItem($key, $item);
+		        }
+		    }
+		    $this->getInventory()->sendArmorContents($this);
+		    foreach($this->getViewers() as $other){
+		        $this->getInventory()->sendArmorContents($other);
+		    }
+		    if($damage > 0){
+		        $source->getDamager()->attack($damage, new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $damage));
+		    }
+		}
+		
 		parent::attack($damage, $source);
 
 		if($source->isCancelled()){
@@ -3863,37 +3936,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 
 		if ($this->add(0, $this->getEyeHeight())->distanceSquared($target) > 34.81) { //5.9 ** 2
 			return;
-		} elseif ($target instanceof Player) {
-			$armorValues = [
-				Item::LEATHER_CAP => 1,
-				Item::LEATHER_TUNIC => 3,
-				Item::LEATHER_PANTS => 2,
-				Item::LEATHER_BOOTS => 1,
-				Item::CHAIN_HELMET => 1,
-				Item::CHAIN_CHESTPLATE => 5,
-				Item::CHAIN_LEGGINGS => 4,
-				Item::CHAIN_BOOTS => 1,
-				Item::GOLD_HELMET => 1,
-				Item::GOLD_CHESTPLATE => 5,
-				Item::GOLD_LEGGINGS => 3,
-				Item::GOLD_BOOTS => 1,
-				Item::IRON_HELMET => 2,
-				Item::IRON_CHESTPLATE => 6,
-				Item::IRON_LEGGINGS => 5,
-				Item::IRON_BOOTS => 2,
-				Item::DIAMOND_HELMET => 3,
-				Item::DIAMOND_CHESTPLATE => 8,
-				Item::DIAMOND_LEGGINGS => 6,
-				Item::DIAMOND_BOOTS => 3,
-			];
-			$points = 0;
-			foreach ($target->getInventory()->getArmorContents() as $index => $i) {
-				if (isset($armorValues[$i->getId()])) {
-					$points += $armorValues[$i->getId()];
-				}
-			}
-
-			$damage[EntityDamageEvent::MODIFIER_ARMOR] = -floor($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
 		}
 
 		$timeDiff = microtime(true) - $this->lastDamegeTime;
@@ -3922,32 +3964,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return;
 		}
 
-		if($target instanceof Player){
-            $damage = 0;
-            foreach($target->getInventory()->getArmorContents() as $key => $item){
-                if($item instanceof Armor && ($thornsLevel = $item->getEnchantment(Enchantment::getEnchantment(Enchantment::TYPE_ARMOR_THORNS))) > 0){
-                    if(mt_rand(1, 100) < $thornsLevel * 15){
-                        $item->setDamage($item->getDamage() + 3);
-                        $damage += ($thornsLevel > 10 ? $thornsLevel - 10 : random_int(0, 4));
-                    }else{
-                        $item->setDamage($item->getDamage() + 1);
-                    }
-
-                    if($item->getDamage() >= $item->getMaxDurability()) {
-                        $target->getInventory()->setArmorItem($key, Item::get(Item::AIR));
-                    }
-
-
-                    $this->getInventory()->setArmorItem($key, $item);
-                }
-            }
-
-            if($damage > 0){
-                $target->attack($damage, new EntityDamageByEntityEvent($target, $this, EntityDamageEvent::CAUSE_MAGIC, $damage));
-            }
-        }
-
-        if ($item->isTool() && $this->isSurvival()) {
+        if ($item->isTool() && $this->isSurvival() && !$ev->isCancelled()) {
             if ($item->useOn($target) && $item->getDamage() >= $item->getMaxDurability()) {
                 $this->inventory->setItemInHand(Item::get(Item::AIR));
             } elseif ($this->inventory->getItemInHand()->getId() === $item->getId()) {
