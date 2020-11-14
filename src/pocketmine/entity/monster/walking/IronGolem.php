@@ -10,6 +10,8 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\entity\Creature;
 use pocketmine\Player;
+use pocketmine\network\protocol\AnimatePacket;
+use pocketmine\Server;
 
 class IronGolem extends WalkingMonster{
 	const NETWORK_ID = 20;
