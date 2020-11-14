@@ -10,6 +10,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\entity\Creature;
 use pocketmine\Player;
+use pocketmine\network\protocol\AnimatePacket;
 
 class IronGolem extends WalkingMonster{
 	const NETWORK_ID = 20;
@@ -41,6 +42,10 @@ class IronGolem extends WalkingMonster{
 			$ev = new EntityDamageByEntityEvent($this, $player, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getDamage());
 			$player->attack($ev->getFinalDamage(), $ev);
 			$player->setMotion(new Vector3(0, 0.7, 0));
+			$pk = new AnimatePacket();
+			$pk->eid = $this->getId();
+			$pk->action = AnimatePacket::ACTION_SWING;
+			Server::broadcastPacket($this->getViewers(), $pk);
 		}
 	}
 
