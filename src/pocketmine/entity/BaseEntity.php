@@ -148,7 +148,7 @@ abstract class BaseEntity extends Creature{
 		return $bb !== null and $block->isSolid() and !$block->isTransparent() and $bb->intersectsWith($this->getBoundingBox());
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack($damage, EntityDamageEvent &$source){
 		if($this->isKnockback() > 0) return;
 
 		parent::attack($damage, $source);

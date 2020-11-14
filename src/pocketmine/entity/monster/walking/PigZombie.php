@@ -60,7 +60,7 @@ class PigZombie extends WalkingMonster{
 		return $this->isAngry() && parent::targetOption($creature, $distance);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack($damage, EntityDamageEvent &$source){
 		parent::attack($damage, $source);
 
 		if(!$source->isCancelled()){

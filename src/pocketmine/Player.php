@@ -2955,7 +2955,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$this->setFood($this->getFood() - $amount);
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack($damage, EntityDamageEvent &$source){
 		if($this->dead === true){
 			return;
 		}

@@ -50,7 +50,7 @@ class Wolf extends WalkingMonster{
 		$this->angry = $val;
 	}
 
-	public function attack($damage, EntityDamageEvent $source){
+	public function attack($damage, EntityDamageEvent &$source){
 		parent::attack($damage, $source);
 
 		if(!$source->isCancelled()){
