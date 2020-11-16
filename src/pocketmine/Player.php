@@ -1115,7 +1115,24 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
 		}
-		
+
+		$a = [
+			'SET_ENTITY_DATA_PACKET',
+			'UPDATE_ATTRIBUTES_PACKET',
+			'ADVENTURE_SETTINGS_PACKET',
+			'SET_TIME_PACKET',
+			'ADVENTURE_SETTINGS_PACKET',
+			'INVENTORY_CONTENT_PACKET',
+			'INVENTORY_SLOT_PACKET',
+			'PLAY_STATUS_PACKET',
+			'NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET'
+		];
+
+		if (in_array($packet->pname(), $a)) {
+			return;
+		}
+
+		var_dump($packet->pname() . " " . __FILE__. ": " . __LINE__);
 		switch($packet->pname()){
 			case 'INVENTORY_CONTENT_PACKET':
 				$queueKey = $packet->pname() . $packet->inventoryID;
@@ -1149,9 +1166,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			case 'SET_ENTITY_DATA_PACKET':
 			case 'MOB_EQUIPMENT_PACKET':
 			case 'MOB_ARMOR_EQUIPMENT_PACKET':
-			case 'BLOCK_EVENT_PACKET':
 			case 'ENTITY_EVENT_PACKET':
-			case 'SIMPLE_EVENT_PACKET':
+//			case 'SIMPLE_EVENT_PACKET':
 			case 'MOB_EFFECT_PACKET':
 			case 'BOSS_EVENT_PACKET':
 				if (isset($this->lastEntityRemove[$packet->eid])) {
@@ -1214,6 +1230,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	}
 
 	public function addBufferToPacketQueue($buffer) {
+		return;
 		if($this->connected === false){
 			return false;
 		}
@@ -1224,8 +1241,17 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		if (count($this->packetQueue) <= 0 && count($this->inventoryPacketQueue) <= 0) {
 			return;
 		}
+		// for debug
+		var_dump('to client');
 		$buffer = '';
 		foreach ($this->packetQueue as $pkBuf) {
+			// for debug
+			var_dump(ord($pkBuf{0}));
+		    if (strlen($pkBuf) > 1000) {
+				var_dump(strlen($pkBuf));
+			} else {
+				var_dump($pkBuf);
+			}
 			$buffer .= Binary::writeVarInt(strlen($pkBuf)) . $pkBuf;
 		}
 		foreach ($this->inventoryPacketQueue as $pk) {
@@ -1254,6 +1280,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return false;
 		}
 
+		var_dump($packet->pname() . " " . __FILE__ . ": " . __LINE__);
 		if ($this->subClientId > 0 && $this->parent != null) {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
@@ -1769,7 +1796,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::BEETROOT => ['food' => 1, 'saturation' => 1.2],
 		Item::BEETROOT_SOUP => ['food' => 6, 'saturation' => 7.2],
 		Item::BREAD => ['food' => 5, 'saturation' => 6],
-		/** @todo cake slice and whole */
+		/** @TODO: cake slice and whole */
 		Item::CARROT => ['food' => 3, 'saturation' => 3.6],
 		Item::CHORUS_FRUIT => ['food' => 4, 'saturation' => 2.4],
 		Item::COOKED_CHICKEN => ['food' => 6, 'saturation' => 7.2],
@@ -1779,7 +1806,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::COOKED_RABBIT => ['food' => 5, 'saturation' => 6],
 		Item::COOKED_SALMON => ['food' => 6, 'saturation' => 9.6],
 		Item::COOKIE => ['food' => 2, 'saturation' => 0.4],
-		//Item::GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
+//		Item::GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
+//		Item::ENCHANTNED_GOLDEN_APPLE => ['food' => 4, 'saturation' => 9.6],
 		Item::GOLDEN_CARROT => ['food' => 6, 'saturation' => 14.4],
 		Item::MELON => ['food' => 2, 'saturation' => 1.2],
 		Item::MUSHROOM_STEW => ['food' => 6, 'saturation' => 7.2],
@@ -1789,6 +1817,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		Item::RABBIT_STEW => ['food' => 10, 'saturation' => 12],
 		Item::RAW_BEEF => ['food' => 3, 'saturation' => 1.8],
 		Item::RAW_CHICKEN => ['food' => 2, 'saturation' => 1.2],
+		// TODO: rewrite fish
 		Item::RAW_FISH => [
 			0 => ['food' => 2, 'saturation' => 0.4], // raw fish
 			1 => ['food' => 2, 'saturation' => 0.4], // raw salmon
@@ -1893,6 +1922,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return;
 		}
 
+		var_dump("----- " . $packet->pname() . " " . __FILE__. ": " . __LINE__);
 		switch($packet->pname()){
 			case 'ITEM_FRAME_DROP_ITEM_PACKET':
 				$tile = null;
@@ -1971,8 +2001,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 					//Timings::$timerLoginPacket->stopTiming();
 					break;
 				}
-				if (!$packet->isVerified) {
-					$this->close("", "Invalid Identity Public Key");
+				if (!$packet->isVerified) { // xbox auth?
+					$this->close("", "Invalid Identity Public Key"); // xbox auth?
 					// error_log("Invalid Identity Public Key " . $packet->username);
 					break;
 				}
@@ -2010,6 +2040,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 				$this->additionalSkinData = $packet->additionalSkinData;				
 				$this->processLogin();
 				//Timings::$timerLoginPacket->stopTiming();
+				var_dump('identityPublicKey' . $this->identityPublicKey);
 				break;
 			case 'MOVE_PLAYER_PACKET':
 				foreach ($this->editingSignData as $hash => $data) {
@@ -2611,7 +2642,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 				}
 				break;
 			/** @minProtocol 120 */
-			case 'COMMAND_OUTPUT_PACKET':
+//			case 'COMMAND_OUTPUT_PACKET':
 			/** @minProtocol 120 */
 			case 'COMMAND_REQUEST_PACKET':
 				if ($packet->command[0] != '/') {
@@ -3392,6 +3423,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	}
 
 	public function completeLogin() {
+		debug_print_backtrace(5, 5);
 		if ($this->loginCompleted) {
 			return;
 		}
@@ -3588,6 +3620,10 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$this->sendSelfData();
 		$this->updateSpeed($this->movementSpeed);
 		$this->sendFullPlayerList();
+
+		echo "DFDFDFDFDDF\n";
+		sleep(10);
+		echo "DFDFDFDFDDF3333\n";
 	}
 
 
@@ -5196,7 +5232,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$pk->setDeviceId($this->getDeviceOS());
 			$this->server->batchPackets($this->server->getOnlinePlayers(), [$pk]);
 		}
-		$this->playerListIsSent = true;
 	}
 
 	/**
@@ -5330,6 +5365,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$pk->entries[] = [$this->getUniqueId(), $this->getId(), $this->getName(), $this->getSkinName(), $this->getSkinData(), $this->getCapeData(), $this->getSkinGeometryName(), $this->getSkinGeometryData()];
 			$this->server->batchPackets($otherPlayers, [$pk]);
 		}
+		$this->playerListIsSent = true;
 	}
 
 	public function setVehicle($vehicle) {

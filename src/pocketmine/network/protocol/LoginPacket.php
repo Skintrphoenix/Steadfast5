@@ -58,7 +58,7 @@ class LoginPacket extends PEPacket {
 	public $skinGeometryName = "";
 	public $skinGeometryData = "";
 	public $capeData = "";
-	public $isVerified = true;
+	public $isVerified = true; // xbox auth?
 	public $premiunSkin = "";
 	public $identityPublicKey = "";
 	public $platformChatId = "";
@@ -79,6 +79,7 @@ class LoginPacket extends PEPacket {
 			$this->getShort();
 		}
 		$this->protocol1 = $this->getInt();
+		var_dump($this->protocol);
 		if (!in_array($this->protocol1, $acceptedProtocols)) {
 			$this->isValidProtocol = false;
 			return;
@@ -124,13 +125,13 @@ class LoginPacket extends PEPacket {
 					} else {
 						if (!isset($data['payload']['extraData'])) continue;
 						$data['payload']['extraData']['XUID'] = "";
-						$this->isVerified = false;
+						$this->isVerified = false; // xbox auth?
 						$dataIndex = $index;
 					}
 					$this->chains['data'][$index] = $data['payload'];
 					$index++;
 				} else {
-					$this->isVerified = false;
+					$this->isVerified = false; // xbox auth?
 				}
 			}
 		} else {

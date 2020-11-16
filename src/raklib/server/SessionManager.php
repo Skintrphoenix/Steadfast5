@@ -104,12 +104,12 @@ class SessionManager{
             $start = microtime(true);
             $max = 10000;
             while(--$max and $this->receivePacket());
-	        while($this->receiveStream());
-			$time = microtime(true) - $start;
-			if($time < 0.025){
-				@time_sleep_until(microtime(true) + 0.025 - $time);
-			}
-			$this->tick();
+            while($this->receiveStream());
+            $time = microtime(true) - $start;
+            if($time < 0.025){
+                @time_sleep_until(microtime(true) + 0.025 - $time);
+            }
+             $this->tick();
         }
     }
 
@@ -228,6 +228,15 @@ class SessionManager{
 			$source = $session->getAddress();
 			while ($stream->getOffset() < $length) {				
 				$buf = $stream->getString();
+
+				// debug
+				var_dump('from client');
+				var_dump(ord($buf{0}));
+				if (strlen($buf) > 1000) {
+					var_dump(strlen($buf));
+				} else {
+					var_dump($buf);
+				}
 				if (empty($buf) || $buf == $spamPacket || $buf == $spamPacket2) {
 					continue;
 				}
@@ -315,6 +324,8 @@ class SessionManager{
             if($id === RakLib::PACKET_ENCAPSULATED){
                 $len = ord($packet{$offset++});
                 $identifier = substr($packet, $offset, $len);
+				var_dump('iden' . $identifier);
+				var_dump(debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20));
                 $offset += $len;
                 if(isset($this->sessions[$identifier])){
                     $flags = ord($packet{$offset++});
