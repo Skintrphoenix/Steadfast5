@@ -112,7 +112,7 @@ class EncapsulatedPacket {
 		$value += $this->messageIndex !== null ? 3 : 0;
 		$value += $this->orderIndex !== null ? 4 : 0;
 		$value += $this->hasSplit ? 10 : 0;
-		$value += strlen($this->buffer)
+		$value += strlen($this->buffer);
 		return $value;
 	}
 
