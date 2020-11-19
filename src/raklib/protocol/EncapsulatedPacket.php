@@ -48,8 +48,9 @@ class EncapsulatedPacket{
      *
      * @return EncapsulatedPacket
      */
-    public static function fromBinary($binary, $internal = false, &$offset = null){
+    public static function fromBinary($binary, $internal = false){
 
+	    $offset = 0;
 	    $packet = new EncapsulatedPacket();
 
         $flags = ord($binary{0});
