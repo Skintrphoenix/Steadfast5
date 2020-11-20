@@ -15,30 +15,33 @@ abstract class WalkingEntity extends BaseEntity {
 	protected $agrDistance = 16;
 
 	protected function checkTarget($update = false) {
-		if ($this->isKnockback() && !$update && $this->baseTarget instanceof Player && $this->baseTarge->isAlive() && sqrt($this->distanceSquared($player)) < $this->agrDistance) {
+		if ($this->isKnockback() && !$update) {
 			return;
 		}
 		if ($update) {
 			$this->moveTime = 0;
 		}
-		if ($this instanceof Monster && !$this->isFriendly()) {
-			$near = PHP_INT_MAX;
-			foreach ($this->getLevel()->getServer()->getOnlinePlayers() as $player) {
-				if ($player->isAlive()) {
-					$distance = sqrt($this->distanceSquared($player));
-					if ($distance >= $near) {
-						continue;
-					}
-					$target = $player;
-					$near = $distance;
-				}
-			}
-
-			if ($near <= $this->agrDistance) {
-				$this->baseTarget = $target;
-				$this->moveTime = 0;
-				return;
-			}
+		if (!$this->isFriendly() && !$update){
+		    $target = $this->baseTarget;
+		    if(!($target instanceof Creature) || !$this->targetOption($target, $this->distanceSquared($target))){
+		        $near = PHP_INT_MAX;
+		        foreach ($this->getLevel()->getEntities() as $creature){
+		            if($creature === $this || !($creature instanceof Creature)){
+		                continue;
+		            }
+		            
+		            if(($distance = $this->distanceSquared($creature)) > $near || !$this->targetOption($creature, $distance)){
+		                continue;
+		            }
+		            
+		            $near = $distance;
+		            $this->baseTarget = $creature;
+		        }
+		    }
+		    
+		    if($this->baseTarget instanceof Creature && $this->baseTarget->isAlive()){
+		            return;
+		    }
 		}
 
 		if ($this->moveTime <= 0 || !($this->baseTarget instanceof Vector3)) {

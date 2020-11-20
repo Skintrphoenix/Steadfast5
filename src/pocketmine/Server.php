@@ -44,6 +44,7 @@ use pocketmine\entity\projectile\BottleOEnchanting;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\Snowball;
 use pocketmine\entity\Egg;
+use pocketmine\entity\FishingHook;
 use pocketmine\entity\Squid;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
@@ -2568,6 +2569,7 @@ class Server{
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Snowball::class);
 		Entity::registerEntity(Egg::class);
+		Entity::registerEntity(FishingHook::class);
 		Entity::registerEntity(Squid::class);
 		Entity::registerEntity(Human::class, true);		
 		

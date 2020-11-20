@@ -43,7 +43,7 @@ abstract class Living extends Entity implements Damageable{
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
 
-	protected $attackTime = 0;
+	public $attackTime = 0;
 
 	protected $invisible = false;
 

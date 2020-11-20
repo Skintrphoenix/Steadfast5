@@ -434,6 +434,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 	private $lastQuickCraftTransactionGroup = [];
 	protected $additionalSkinData = [];
 	protected $playerListIsSent = false;
+	private $rod = null;
 
 	public function getLeaveMessage(){
 		return "";
@@ -2971,6 +2972,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$canBeBlocked = [
 		    EntityDamageEvent::CAUSE_ENTITY_ATTACK,
 		    EntityDamageEvent::CAUSE_PROJECTILE,
+		    EntityDamageEvent::CAUSE_FALL,
 		    EntityDamageEvent::CAUSE_FIRE,
 		    EntityDamageEvent::CAUSE_LAVA,
 		    EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
@@ -3009,35 +3011,33 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		        }
 		    }
 		    
-		    $source->setDamage(EntityDamageEvent::MODIFIER_ARMOR, -floor($source->getDamage(EntityDamageEvent::MODIFIER_BASE) * $points * 0.04));
+		    $source->setDamage(-floor($source->getDamage(EntityDamageEvent::MODIFIER_BASE) * $points * 0.04), EntityDamageEvent::MODIFIER_ARMOR);
 		    
-		    $damage = 0;
+		    $thorns = 0;
 		    foreach($this->getInventory()->getArmorContents() as $key => $item){
 		        if($item instanceof Armor){
 		            if(($thornsLevel = $item->getEnchantment(Enchantment::getEnchantment(Enchantment::TYPE_ARMOR_THORNS))) > 0 && $source instanceof EntityDamageByEntityEvent){
 		                if(mt_rand(1, 100) < $thornsLevel * 15){
 		                    $item->removeDurability(3);
-		                    $damage += ($thornsLevel > 10 ? $thornsLevel - 10 : random_int(0, 4));
+		                    $thorns += ($thornsLevel > 10 ? $thornsLevel - 10 : random_int(0, 4));
 		                }else{
 		                    $item->removeDurability();
 		                }
 		            } else {
 		                $item->removeDurability();
 		            }
-		            
 		            $this->getInventory()->setArmorItem($key, $item);
 		            if($item->getDamage() >= $item->getMaxDurability()) {
 		                $this->getInventory()->setArmorItem($key, Item::get(Item::AIR));
 		            }
-		            $this->getInventory()->setArmorItem($key, $item);
 		        }
 		    }
 		    $this->getInventory()->sendArmorContents($this);
 		    foreach($this->getViewers() as $other){
 		        $this->getInventory()->sendArmorContents($other);
 		    }
-		    if($damage > 0){
-		        $source->getDamager()->attack($damage, new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $damage));
+		    if($thorns > 0){
+		        $source->getDamager()->attack($thorns, new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $thorns));
 		    }
 		}
 		
@@ -3956,6 +3956,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
         }
 
 		$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
+		if($target->attackTime > 0 || $target->noDamageTicks > 0){
+		    $lastCause = $target->getLastDamageCause();
+		    if(!is_null($lastCause) && $lastCause->getDamage() > $ev->getFinalDamage()){
+		        $ev->setCancelled();
+		    }
+		}
 		$target->attack($ev->getFinalDamage(), $ev);
 
 		if ($ev->isCancelled()) {
@@ -4056,8 +4062,50 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 				if ($itemInHand instanceof Armor) {
 					$this->inventory->setItem($this->inventory->getHeldItemSlot(), $this->inventory->getArmorItem($itemInHand::SLOT_NUMBER));
 					$this->inventory->setArmorItem($itemInHand::SLOT_NUMBER, $itemInHand);
-				} elseif (($isPotion = ($itemInHand instanceof Potion)) || isset(self::$foodData[$itemInHand->getId()])) {
-					if ($isPotion && !$itemInHand->canBeConsumed() || !$isPotion && $this->getFood() >= self::FOOD_LEVEL_MAX) {
+				} else if($itemInHand->getId() === Item::FISHING_ROD){
+				    if(is_null($this->rod)){
+				        $yawRad = $this->yaw / 180 * M_PI;
+				        $pitchRad = $this->pitch / 180 * M_PI;
+				        $nbt = new Compound("", [
+				            "Pos" => new Enum("Pos", [
+				                new DoubleTag("", $this->x),
+				                new DoubleTag("", $this->y + $this->getEyeHeight()),
+				                new DoubleTag("", $this->z)
+				            ]),
+				            "Motion" => new Enum("Motion", [
+				                new DoubleTag("", -sin($yawRad) * cos($pitchRad)),
+				                new DoubleTag("", -sin($pitchRad)),
+				                new DoubleTag("", cos($yawRad) * cos($pitchRad))
+				            ]),
+				            "Rotation" => new Enum("Rotation", [
+				                new FloatTag("", $this->yaw),
+				                new FloatTag("", $this->pitch)
+				            ]),
+				        ]);
+				        
+				        $f = 1.5;
+				        $this->rod = Entity::createEntity("FishingHook", $this->chunk, $nbt, $this);
+				        $this->rod->setMotion($this->rod->getMotion()->multiply($f));
+				        $this->rod->spawnToAll();
+				    } else {
+				        $damaged = $this->rod->reelLine();
+				        if($damaged && $this->isSurvival()){
+				            $ench = $itemInHand->getEnchantment(Enchantment::TYPE_UNBREAKING);
+				            if (!is_null($ench)) {
+				                $enchLevel = $ench->getLevel();
+				                $chance = 100 / ($enchLevel + 1);
+				                if (mt_rand(1, 100) < $chance) {
+				                    $itemInHand->setDamage($itemInHand->getDamage() + 1);
+				                }
+				            } else {
+				                $itemInHand->setDamage($itemInHand->getDamage() + 1);
+				            }
+				        }
+				        $this->rod = null;
+				    }
+				}elseif (($isPotion = ($itemInHand instanceof Potion)) || isset(self::$foodData[$itemInHand->getId()])) {
+				
+					if($isPotion && !$itemInHand->canBeConsumed() || !$isPotion && $this->getFood() >= self::FOOD_LEVEL_MAX) {
 						$this->startAction = -1;
 						return;
 					}
@@ -4913,6 +4961,12 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			} else {
 				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, true);
 			}
+		}
+		
+		if(!is_null($this->rod) && $this->inventory->getItemInHand()->getId() !== Item::FISHING_ROD){
+		    $this->rod->kill();
+		    $this->rod->close();
+		    $this->rod = null;
 		}
 		return true;
 	}
