@@ -43,7 +43,7 @@ abstract class Living extends Entity implements Damageable{
 	protected $gravity = 0.08;
 	protected $drag = 0.02;
 
-	protected $attackTime = 0;
+	public $attackTime = 0;
 
 	protected $invisible = false;
 
@@ -95,7 +95,7 @@ abstract class Living extends Entity implements Damageable{
 		$this->attackTime = 0;
 	}
 
-	public function attack($damage, EntityDamageEvent &$source){
+	public function attack($damage, EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getDamage() >= $damage){

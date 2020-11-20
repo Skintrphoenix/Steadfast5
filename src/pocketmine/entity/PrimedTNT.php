@@ -47,7 +47,7 @@ class PrimedTNT extends Entity implements Explosive {
 	protected $owner = null;
 	
 	public function attack($damage, EntityDamageEvent $source) {
-		
+
 	}
 
 	protected function initEntity() {

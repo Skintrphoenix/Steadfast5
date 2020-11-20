@@ -581,8 +581,6 @@ class Block extends Position implements Metadatable {
 			self::$list[self::FENCE_GATE_DARK_OAK] = FenceGateDarkOak::class;
 			self::$list[self::FENCE_GATE_ACACIA] = FenceGateAcacia::class;
 
-			self::$list[self::GRASS_PATH] = GrassPath::class;
-
 			self::$list[self::PODZOL] = Podzol::class;
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
 			self::$list[self::STONECUTTER] = Stonecutter::class;
@@ -670,9 +668,7 @@ class Block extends Position implements Metadatable {
 			self::$list[self::UNDYED_SHULKER_BOX] = UndyedShulkerBox::class;
 			self::$list[self::FROSTED_ICE] = FrostedIce::class;
 			self::$list[self::MAGMA] = MagmaBlock::class;
-			self::$list[self::NETHER_WART_BLOCK_BLOCK] = NetherWartBlock::class;
 			self::$list[self::RED_NETHER_BRICK] = RedNetherBrick::class;
-			self::$list[self::BONE_BLOCK] = BoneBlock::class;
             
 			self::$list[self::PURPLE_GLAZED_TERRACOTTA] = PurpleGlazedTerracotta::class;
 			self::$list[self::WHITE_GLAZED_TERRACOTTA] = WhiteGlazedTerracotta::class;

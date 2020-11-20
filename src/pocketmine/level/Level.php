@@ -1306,6 +1306,64 @@ class Level implements ChunkManager, Metadatable{
 						return true;
 					}
 				}
+				
+				if ($item instanceof Armor) {
+				    $this->inventory->setItem($this->inventory->getHeldItemSlot(), $this->inventory->getArmorItem($itemInHand::SLOT_NUMBER));
+				    $this->inventory->setArmorItem($item::SLOT_NUMBER, $item);
+				} elseif ($item->getId() === Item::SNOWBALL || $item->getId() === Item::SPLASH_POTION || $item->getId() === Item::EGG || $item->getId() === Item::BOTTLE_ENCHANTING) {
+				    $yawRad = $player->yaw / 180 * M_PI;
+				    $pitchRad = $player->pitch / 180 * M_PI;
+				    $nbt = new Compound("", [
+				        "Pos" => new Enum("Pos", [
+				            new DoubleTag("", $player->x),
+				            new DoubleTag("", $player->y + $player->getEyeHeight()),
+				            new DoubleTag("", $player->z)
+				        ]),
+				        "Motion" => new Enum("Motion", [
+				            new DoubleTag("", -sin($yawRad) * cos($pitchRad)),
+				            new DoubleTag("", -sin($pitchRad)),
+				            new DoubleTag("", cos($yawRad) * cos($pitchRad))
+				        ]),
+				        "Rotation" => new Enum("Rotation", [
+				            new FloatTag("", $player->yaw),
+				            new FloatTag("", $player->pitch)
+				        ]),
+				    ]);
+				    
+				    $f = 1.5;
+				    switch ($item->getId()) {
+				        case Item::SNOWBALL:
+				            $projectile = Entity::createEntity("Snowball", $player->chunk, $nbt, $player);
+				            break;
+				        case Item::EGG:
+				            $projectile = Entity::createEntity("Egg", $player->chunk, $nbt, $player);
+				            break;
+				        case Item::BOTTLE_ENCHANTING:
+				            $f = .3;
+				            $projectile = Entity::createEntity("BottleOEnchanting", $player->chunk, $nbt, $player);
+				            break;
+				        case Item::SPLASH_POTION:
+				            $projectile = Entity::createEntity("SplashPotion", $player->chunk, $nbt, $player, $item->getDamage());
+				            break;
+				    }
+				    $projectile->setMotion($projectile->getMotion()->multiply($f));
+				    if ($player->isSurvival()) {
+				        $item->setCount($item->getCount() - 1);
+				        $player->getInventory()->setItemInHand($item->getCount() > 0 ? $item : Item::get(Item::AIR));
+				    }
+				    if ($projectile instanceof Projectile) {
+				        $player->server->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
+				        if ($projectileEv->isCancelled()) {
+				            $projectile->kill();
+				        } else {
+				            $projectile->spawnToAll();
+				            $player->level->addSound(new LaunchSound($this), $player->getViewers());
+				        }
+				    } else {
+				        $projectile->spawnToAll();
+				    }
+				}
+				
 				if ($item->canBeActivated() && $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)) {
 					if ($item->getCount() <= 0) {
 						$item = Item::get(Item::AIR, 0, 0);
