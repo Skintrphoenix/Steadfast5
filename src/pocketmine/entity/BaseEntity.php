@@ -36,7 +36,7 @@ abstract class BaseEntity extends Creature{
 	
 	protected $speed = 1;
 	
-	private static $closeMonsterOnDay = true;
+	private static $closeMonsterOnDay = false;
 	
 	public static function setCloseMonsterOnDay($val) {
 		self::$closeMonsterOnDay = $val;
@@ -268,7 +268,7 @@ abstract class BaseEntity extends Creature{
 	}
 	  
 	public function isNeedSaveOnChunkUnload() {
-		return false;
+		return true;
 	}  
 
 }

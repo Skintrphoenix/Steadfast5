@@ -170,13 +170,13 @@ abstract class Living extends Entity implements Damageable{
 	public function entityBaseTick($tickDiff = 1) {
 		if ($this->dead === true) {
 			++$this->deadTicks;
-			if ($this->deadTicks >= 10) {
+			if ($this->deadTicks >= 3) {
 				$this->despawnFromAll();
 				if (!($this instanceof Player)) {
 					$this->close();
 				}
 			}
-			return $this->deadTicks < 10;
+			return $this->deadTicks < 3;
 		}
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);

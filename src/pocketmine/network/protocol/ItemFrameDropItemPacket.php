@@ -16,5 +16,5 @@ class ItemFrameDropItemPacket extends PEPacket{
 
 	public function encode($playerProtocol){
 	}
-	
+
 }

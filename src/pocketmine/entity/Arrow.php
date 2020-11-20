@@ -50,10 +50,6 @@ class Arrow extends Projectile {
 		}
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if ($this->onGround || $this->hadCollision) {
-		    $this->setCritical(false);
-		}
-
 		if ($this->age > 1200) {
 			$this->kill();
 			$hasUpdate = true;

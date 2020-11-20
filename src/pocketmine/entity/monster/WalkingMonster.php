@@ -100,7 +100,7 @@ abstract class WalkingMonster extends WalkingEntity implements Monster{
 		}
 
 		if(!$this->isAlive()){
-			if(++$this->deadTicks >= 23){
+			if(++$this->deadTicks >= 3){
 				$this->close();
 				return false;
 			}
