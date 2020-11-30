@@ -21,7 +21,7 @@ abstract class WalkingEntity extends BaseEntity {
 		if ($update) {
 			$this->moveTime = 0;
 		}
-		if (!$this->isFriendly() && !$update){
+		if (!$this->isFriendly() && $update === false){
 		    $target = $this->baseTarget;
 		    if(!($target instanceof Creature) || !$this->targetOption($target, $this->distanceSquared($target))){
 		        $near = PHP_INT_MAX;
