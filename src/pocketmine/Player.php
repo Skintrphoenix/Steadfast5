@@ -1973,7 +1973,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 						break;
 					case 'START_DESTROY_BLOCK':
 						$this->actionsNum['CRACK_BLOCK'] = 0;
-						if (!$this->isCreative()) {
 							$block = $this->level->getBlock(new Vector3($packet->x, $packet->y, $packet->z));
 							$breakTime = ceil($this->getBreakTime($block) * 20);
 							$fireBlock = $block->getSide($packet->face);
@@ -1991,7 +1990,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 								$viewers[] = $this;
 								Server::broadcastPacket($viewers, $pk);
 							}
-						}
 						break;
 					case 'ABORT_DESTROY_BLOCK':
 					case 'STOP_DESTROY_BLOCK':

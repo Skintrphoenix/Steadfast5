@@ -12,7 +12,7 @@ use pocketmine\block\Water;
 
 abstract class WalkingEntity extends BaseEntity {
 
-	protected $agrDistance = 16;
+	protected $ticksToNextTargetSelect = 0;
 
 	protected function checkTarget($update = false) {
 		if ($this->isKnockback() && !$update) {
@@ -20,8 +20,9 @@ abstract class WalkingEntity extends BaseEntity {
 		}
 		if ($update) {
 			$this->moveTime = 0;
+			$this->ticksToNextTargetSelect = random_int(60, 100);
 		}
-		if (!$this->isFriendly() && $update === false){
+		if (!$this->isFriendly() && $update === false && $this->ticksToNextTargetSelect < 1){
 		    $target = $this->baseTarget;
 		    if(!($target instanceof Creature) || !$this->targetOption($target, $this->distanceSquared($target))){
 		        $near = PHP_INT_MAX;
@@ -42,6 +43,13 @@ abstract class WalkingEntity extends BaseEntity {
 		    if($this->baseTarget instanceof Creature && $this->baseTarget->isAlive()){
 		            return;
 		    }
+		}
+
+		if($this->ticksToNextTargetSelect > 0){
+		    $this->ticksToNextTargetSelect--;
+		}
+		if($this->ticksToNextTargetSelect < 0){
+		    $this->ticksToNextTargetSelect = 0;
 		}
 
 		if ($this->moveTime <= 0 || !($this->baseTarget instanceof Vector3)) {
