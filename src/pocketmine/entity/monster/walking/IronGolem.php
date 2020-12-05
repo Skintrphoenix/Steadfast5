@@ -11,7 +11,6 @@ use pocketmine\math\Vector3;
 use pocketmine\entity\Creature;
 use pocketmine\Player;
 use pocketmine\network\protocol\AnimatePacket;
-use pocketmine\Server;
 
 class IronGolem extends WalkingMonster{
 	const NETWORK_ID = 20;
@@ -27,7 +26,6 @@ class IronGolem extends WalkingMonster{
 		$this->setMaxHealth(100);
 		parent::initEntity();
 
-		$this->setFriendly(true);
 		$this->setDamage([0, 21, 21, 21]);
 		$this->setMinDamage([0, 7, 7, 7]);
 	}
@@ -46,15 +44,14 @@ class IronGolem extends WalkingMonster{
 			$pk = new AnimatePacket();
 			$pk->eid = $this->getId();
 			$pk->action = AnimatePacket::ACTION_SWING;
-			Server::broadcastPacket($this->getViewers(), $pk);
+			foreach($this->getViewers() as $p){
+			    $p->dataPacket($pk);
+			}
 		}
 	}
 
 	public function targetOption(Creature $creature, float $distance){
-		if(!($creature instanceof Player)){
-			return $creature->isAlive() && $distance <= 60;
-		}
-		return false;
+		return $creature->isAlive() && $distance <= 60;
 	}
 
 	public function getDrops(){

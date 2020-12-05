@@ -235,6 +235,8 @@ class Level implements ChunkManager, Metadatable{
 	
 	private $closed = false;
 	
+	public $sleepTicks = 0;
+	
 	protected $yMask;
 	protected $maxY;
 	protected $chunkCache = [];
@@ -633,6 +635,10 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$this->sendMove();
+		
+		if($this->sleepTicks > 0 && --$this->sleepTicks <= 0){
+		    $this->checkSleep();
+		}
 
 		foreach ($this->playerHandItemQueue as $senderId => $playerList) {
 			foreach ($playerList as $recipientId => $data) {
@@ -649,6 +655,28 @@ class Level implements ChunkManager, Metadatable{
 		}
 		//$this->timings->doTick->stopTiming();
 	}
+	
+	public function checkSleep(){
+	    if(count($this->getPlayers()) < 1){
+	        return;
+	    }
+	    $time = $this->getTime() % Level::TIME_FULL;
+	    
+	    if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
+	        foreach($this->getPlayers() as $p){
+	            if($p->sleeping === null){
+	                return;
+	            }
+	        }
+	        
+	        $this->setTime($this->getTime() + Level::TIME_FULL - $time);
+	        
+	        foreach($this->getPlayers() as $p){
+	            $p->stopSleep();
+	        }
+	    }
+	}
+	
 	
 	protected function sendMove() {
 		if (!empty($this->moveToSend)) {

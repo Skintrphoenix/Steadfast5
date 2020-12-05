@@ -1149,7 +1149,8 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, true);
 
 		$this->setSpawn($pos);
-		$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask([$this, "checkSleep"]), 60);
+		$this->level->sleepTicks = 60;
+		//$this->tasks[] = $this->server->getScheduler()->scheduleDelayedTask(new CallbackTask([$this, "checkSleep"]), 60); Moved to Level
 
 		return true;
 	}
@@ -1189,32 +1190,6 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$this->dataPacket($pk);
 		}
 
-	}
-
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
-	public function checkSleep(){
-		if($this->sleeping instanceof Vector3){
-			//TODO: Move to Level
-
-			$time = $this->level->getTime() % Level::TIME_FULL;
-
-			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
-				foreach($this->level->getPlayers() as $p){
-					if($p->sleeping === null){
-						return;
-					}
-				}
-
-				$this->level->setTime($this->level->getTime() + Level::TIME_FULL - $time);
-
-				foreach($this->level->getPlayers() as $p){
-					$p->stopSleep();
-				}
-			}
-		}
 	}
 
 	/**
@@ -3955,7 +3930,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 		$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage);
 		if($target->attackTime > 0 || $target->noDamageTicks > 0){
 		    $lastCause = $target->getLastDamageCause();
-		    if(!is_null($lastCause) && $lastCause->getDamage() > $ev->getFinalDamage()){
+		    if(!is_null($lastCause)){
 		        $ev->setCancelled();
 		    }
 		}

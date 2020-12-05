@@ -176,6 +176,31 @@ abstract class BaseEntity extends Creature{
 
 	}
 
+	public function kill(){
+	    parent::kill();
+	    $orbCount = mt_rand(2,3);
+	    $chunk = $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4);
+	    for ($i = 0; $i < $orbCount; $i++) {
+	        $nbt = new Compound("", [
+	            "Pos" => new Enum("Pos", [
+	                new DoubleTag("", $this->x),
+	                new DoubleTag("", $this->y),
+	                new DoubleTag("", $this->z)
+	            ]),
+	            "Motion" => new Enum("Motion", [
+	                new DoubleTag("", 0),
+	                new DoubleTag("", 0),
+	                new DoubleTag("", 0)
+	            ]),
+	            "Rotation" => new Enum("Rotation", [
+	                new FloatTag("", 0),
+	                new FloatTag("", 0)
+	            ])
+	        ]);
+	        new ExperienceOrb($chunk, $nbt);
+	    }
+	}
+
 	public function entityBaseTick($tickDiff = 1){
 		//Timings::$timerEntityBaseTick->startTiming();
 

@@ -25,8 +25,6 @@ class SnowGolem extends WalkingMonster implements ProjectileSource{
 
 	public function initEntity(){
 		parent::initEntity();
-
-		$this->setFriendly(true);
 	}
 
 	public function getName(){
@@ -34,7 +32,7 @@ class SnowGolem extends WalkingMonster implements ProjectileSource{
 	}
 
 	public function targetOption(Creature $creature, float $distance){
-		return !($creature instanceof Player) && $creature->isAlive() && $distance <= 60;
+		return $creature->isAlive() && $distance <= 60;
 	}
 
 	public function attackEntity(Entity $player){
