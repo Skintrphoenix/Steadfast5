@@ -976,6 +976,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			$packet->senderSubClientID = $this->subClientId;
 			return $this->parent->dataPacket($packet);
 		}
+		var_dump("Sent Packet: " . $packet->pname());
 		switch($packet->pname()){
 			case 'INVENTORY_CONTENT_PACKET':
 				$queueKey = $packet->pname() . $packet->inventoryID;
@@ -1738,6 +1739,7 @@ class Player extends Human implements CommandSender, InventoryHolder, IPlayer {
 			return;
 		}
 
+		var_dump("Received Packet: " . $packet->pname());
 		switch($packet->pname()){
             case 'SET_PLAYER_GAMETYPE_PACKET':
                 file_put_contents("./logs/possible_hacks.log", date('m/d/Y h:i:s a', time()) . " SET_PLAYER_GAMETYPE_PACKET " . $this->username . PHP_EOL, FILE_APPEND | LOCK_EX);
