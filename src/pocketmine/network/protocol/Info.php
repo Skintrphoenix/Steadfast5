@@ -101,6 +101,29 @@ interface Info {
 	const PROTOCOL_411 = 411; // 1.16.100.52
 	const PROTOCOL_412 = 412; // 1.16.100.53
 	const PROTOCOL_413 = 413; // 1.16.100.54
+        const PROTOCOL_414 = 414;
+        const PROTOCOL_415 = 415;
+        const PROTOCOL_416 = 416;
+        const PROTOCOL_417 = 417;
+        const PROTOCOL_418 = 418;
+        const PROTOCOL_419 = 419;
+        const PROTOCOL_420 = 420;
+        const PROTOCOL_421 = 421;
+        const PROTOCOL_422 = 422;
+        const PROTOCOL_423 = 423;
+        const PROTOCOL_424 = 424;
+        const PROTOCOL_425 = 425;
+        const PROTOCOL_427 = 427;
+        const PROTOCOL_428 = 428;
+        const PROTOCOL_429 = 429;
+        const PROTOCOL_430 = 430;
+        const PROTOCOL_431 = 431;
+        const PROTOCOL_433 = 433;
+        const PROTOCOL_434 = 434;
+        const PROTOCOL_435 = 435;
+        const PROTOCOL_437 = 437;
+        const PROTOCOL_440 = 440;
+        
 
 	/** OUTDATED (supporting will be removed with next release, may didn't work properly)*/
 	const PROTOCOL_120 = 120; // 1.2.0.xx (beta)
